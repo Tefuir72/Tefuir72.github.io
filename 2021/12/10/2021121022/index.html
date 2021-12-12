@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Apache Log4j2 RCE漏洞背景Apache Log4j是一个基于Java的日志框架，已于2015年8月5日停止维护。Log4j2是其重构升级版本，新增的 Lookups 方法设计用于通过多种途径动态引入外部变量。 log4j2版本 &lt; log4j-2.15.0-rc2 可由JNDI注入实现远程代码执行。 环境搭建下载网上的poc环境 1https:&#x2F;&#x2F;hub.fastgit.or">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Apache Log4j2 RCE">
+<meta property="og:url" content="https://tefuir72.github.io/2021/12/10/2021121022/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="Apache Log4j2 RCE漏洞背景Apache Log4j是一个基于Java的日志框架，已于2015年8月5日停止维护。Log4j2是其重构升级版本，新增的 Lookups 方法设计用于通过多种途径动态引入外部变量。 log4j2版本 &lt; log4j-2.15.0-rc2 可由JNDI注入实现远程代码执行。 环境搭建下载网上的poc环境 1https:&#x2F;&#x2F;hub.fastgit.or">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210225945624.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210225302112.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210231243394.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210231721912.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210232332675.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210232415023.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210232958359.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210233139124.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210233232885.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210233330438.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210234016321.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210234321849.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210234731442.png">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210235819559.png">
+<meta property="article:published_time" content="2021-12-10T14:29:28.000Z">
+<meta property="article:modified_time" content="2021-12-10T15:58:38.296Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="漏洞分析">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tefuir72.github.io/2021/12/10/2021121022/2021121022/image-20211210225945624.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Apache Log4j2 RCE</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2021/12/12/2021121213/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2021/12/06/2021120623/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/12/10/2021121022/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/12/10/2021121022/&text=Apache Log4j2 RCE"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/12/10/2021121022/&is_video=false&description=Apache Log4j2 RCE"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Apache Log4j2 RCE&body=Check out this article: https://tefuir72.github.io/2021/12/10/2021121022/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/12/10/2021121022/&name=Apache Log4j2 RCE&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/12/10/2021121022/&t=Apache Log4j2 RCE"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Apache-Log4j2-RCE"><span class="toc-number">1.</span> <span class="toc-text">Apache Log4j2 RCE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84%E6%9C%80%E5%90%8E"><span class="toc-number">1.5.</span> <span class="toc-text">最后的最后</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.5.1.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        Apache Log4j2 RCE
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-12-10T14:29:28.000Z" itemprop="datePublished">2021-12-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/VULN/">VULN</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" rel="tag">漏洞分析</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Apache-Log4j2-RCE"><a href="#Apache-Log4j2-RCE" class="headerlink" title="Apache Log4j2 RCE"></a>Apache Log4j2 RCE</h2><h3 id="漏洞背景"><a href="#漏洞背景" class="headerlink" title="漏洞背景"></a>漏洞背景</h3><p>Apache Log4j是一个基于Java的日志框架，已于2015年8月5日停止维护。Log4j2是其重构升级版本，新增的 Lookups 方法设计用于通过多种途径动态引入外部变量。 log4j2版本 &lt; log4j-2.15.0-rc2 可由JNDI注入实现远程代码执行。</p>
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><p>下载网上的poc环境</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">https://hub.fastgit.org/tangxiaofeng7/apache-log4j-poc</span><br></pre></td></tr></table></figure>
+
+<p>pom导入依赖失败</p>
+<p>手动下载并导入</p>
+<p><img src="2021121022/image-20211210225945624.png" alt="image-20211210225945624"></p>
+<p>改下java编译器</p>
+<p><img src="2021121022/image-20211210225302112.png" alt="image-20211210225302112"></p>
+<p>环境搭建完成</p>
+<h3 id="漏洞复现"><a href="#漏洞复现" class="headerlink" title="漏洞复现"></a>漏洞复现</h3><p>这里拿 jdk-8u41复现</p>
+<p>ldap:</p>
+<p><img src="2021121022/image-20211210231243394.png" alt="image-20211210231243394"></p>
+<p>rce:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar JNDI-Injection-Exploit-1.0-SNAPSHOT-all.jar -A 127.0.0.1 -C &quot;calc&quot;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><img src="2021121022/image-20211210231721912.png" alt="image-20211210231721912"></p>
+<h3 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h3><p>问题出在<code>MessagePatternConverter.class</code>和<code>Interpolator.class</code>上</p>
+<p>我们分别再该类对应处打上断点</p>
+<p><code>MessagePatternConverter.class</code>:</p>
+<p><img src="2021121022/image-20211210232332675.png" alt="image-20211210232332675"></p>
+<p><code>Interpolator.class</code>:</p>
+<p><img src="2021121022/image-20211210232415023.png" alt="image-20211210232415023"></p>
+<p>开始调试</p>
+<p>首先根据传入的String参数进入logger类的error方法</p>
+<p>之后payload传入event参数</p>
+<p>跟踪event参数</p>
+<p><img src="2021121022/image-20211210232958359.png" alt="image-20211210232958359"></p>
+<p><img src="2021121022/image-20211210233139124.png" alt="image-20211210233139124"></p>
+<p><img src="2021121022/image-20211210233232885.png" alt="image-20211210233232885"></p>
+<p><img src="2021121022/image-20211210233330438.png" alt="image-20211210233330438"></p>
+<p>最后进入<code>MessagePatternConverter.class#format</code>方法</p>
+<p><img src="2021121022/image-20211210234016321.png" alt="image-20211210234016321"></p>
+<p>可以看到</p>
+<p>会对workingBuilder变量从偏移量为34做一个<code>$&#123;</code>的判断</p>
+<p>然后将payload截取放到value中</p>
+<p><img src="2021121022/image-20211210234321849.png" alt="image-20211210234321849"></p>
+<p>最后进入到<code>Interpolator.class#lookup</code>中</p>
+<p>在这里var传入的是我们<code>$&#123;&#125;</code>中的值</p>
+<p>截取var中的前缀<code>jndi</code>放到prefix变量中</p>
+<p>并由此获取到<code>JndiLookup</code>类放到lookup中</p>
+<p>截取var中<code>jndi:</code>之后的字符串放入name变量</p>
+<p>最后将name传入<code>lookup.lookup(event, name)</code>,调用<code>JndiLookup#lookup</code>通过LDAP引入外部JNDI Reference</p>
+<p><img src="2021121022/image-20211210234731442.png" alt="image-20211210234731442"></p>
+<h3 id="最后的最后"><a href="#最后的最后" class="headerlink" title="最后的最后"></a>最后的最后</h3><p>该漏洞对java的环境有要求</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">jdk =&lt; 8u181</span><br></pre></td></tr></table></figure>
+
+<p>此外</p>
+<p>当JDK版本&gt;=8u191，当存在 <code>org.apache.naming.factory.BeanFactory</code> 与 <code>com.springsource.org.apache.el</code> 等依赖时，可在返回的JNDI Reference中指定相应工厂类及setter方法，或是由LDAP引入序列化链实现RCE</p>
+<p>同时</p>
+<p><img src="2021121022/image-20211210235819559.png" alt="image-20211210235819559"></p>
+<h4 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h4><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/l7iclJRegADs3oiEdcgAvQ">https://mp.weixin.qq.com/s/l7iclJRegADs3oiEdcgAvQ</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Apache-Log4j2-RCE"><span class="toc-number">1.</span> <span class="toc-text">Apache Log4j2 RCE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E8%83%8C%E6%99%AF"><span class="toc-number">1.1.</span> <span class="toc-text">漏洞背景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">1.2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0"><span class="toc-number">1.3.</span> <span class="toc-text">漏洞复现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90"><span class="toc-number">1.4.</span> <span class="toc-text">漏洞分析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E5%90%8E%E7%9A%84%E6%9C%80%E5%90%8E"><span class="toc-number">1.5.</span> <span class="toc-text">最后的最后</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%82%E8%80%83"><span class="toc-number">1.5.1.</span> <span class="toc-text">参考</span></a></li></ol></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/12/10/2021121022/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/12/10/2021121022/&text=Apache Log4j2 RCE"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/12/10/2021121022/&is_video=false&description=Apache Log4j2 RCE"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Apache Log4j2 RCE&body=Check out this article: https://tefuir72.github.io/2021/12/10/2021121022/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/12/10/2021121022/&title=Apache Log4j2 RCE"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/12/10/2021121022/&name=Apache Log4j2 RCE&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/12/10/2021121022/&t=Apache Log4j2 RCE"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
