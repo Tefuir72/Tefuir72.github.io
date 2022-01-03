@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="前言近期参加了学长学姐们的一个漏洞专题会,会上学长给我们展示了2022年顶会关于php反序列化自动挖掘的论文汇报ppt,于是产生了想要做一个漏洞挖掘工具的想法.有了想法就想去实践一下,但一开始下手就发现自己对于python工具的开发真的是一无所知.基于此原因,我便产生了通过分析网上现成的工具源码来学习python工具开发的念头.在网上能找到的自动化挖掘php反序列化工具寥寥可数,目前找到行之可用的">
+<meta property="og:type" content="article">
+<meta property="og:title" content="kunlun-M源码分析">
+<meta property="og:url" content="https://tefuir72.github.io/2021/12/24/2021122421/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="前言近期参加了学长学姐们的一个漏洞专题会,会上学长给我们展示了2022年顶会关于php反序列化自动挖掘的论文汇报ppt,于是产生了想要做一个漏洞挖掘工具的想法.有了想法就想去实践一下,但一开始下手就发现自己对于python工具的开发真的是一无所知.基于此原因,我便产生了通过分析网上现成的工具源码来学习python工具开发的念头.在网上能找到的自动化挖掘php反序列化工具寥寥可数,目前找到行之可用的">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tefuir72.github.io/2021/12/24/2021122421/2021122421/image-20211229210804738.png">
+<meta property="article:published_time" content="2021-12-24T13:22:24.000Z">
+<meta property="article:modified_time" content="2021-12-29T13:19:42.796Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="开发">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tefuir72.github.io/2021/12/24/2021122421/2021122421/image-20211229210804738.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>kunlun-M源码分析</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2021/12/26/2021122621/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2021/12/21/2021122116/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/12/24/2021122421/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/12/24/2021122421/&text=kunlun-M源码分析"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/12/24/2021122421/&is_video=false&description=kunlun-M源码分析"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=kunlun-M源码分析&body=Check out this article: https://tefuir72.github.io/2021/12/24/2021122421/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/12/24/2021122421/&name=kunlun-M源码分析&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/12/24/2021122421/&t=kunlun-M源码分析"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">核心文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="toc-number">3.2.</span> <span class="toc-text">运行逻辑</span></a></li></ol></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        kunlun-M源码分析
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2021-12-24T13:22:24.000Z" itemprop="datePublished">2021-12-24</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/CODE/">CODE</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/%E5%BC%80%E5%8F%91/" rel="tag">开发</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h3 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h3><p>近期参加了学长学姐们的一个漏洞专题会,会上学长给我们展示了2022年顶会关于php反序列化自动挖掘的论文汇报ppt,于是产生了想要做一个漏洞挖掘工具的想法.有了想法就想去实践一下,但一开始下手就发现自己对于python工具的开发真的是一无所知.基于此原因,我便产生了通过分析网上现成的工具源码来学习python工具开发的念头.在网上能找到的自动化挖掘php反序列化工具寥寥可数,目前找到行之可用的工具就是Kunlun-M的插件phpunserializechain,其利用.ql的扫描思路感觉十分新颖,而且分析大佬写的python工具也十分有利于python编程能力,于是就把代码拉下来放在本地搭好环境开始了本人的首次分析.</p>
+<h3 id="环境搭建"><a href="#环境搭建" class="headerlink" title="环境搭建"></a>环境搭建</h3><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">cp Kunlun_M/settings.py.bak Kunlun_M/settings.py</span><br><span class="line"></span><br><span class="line">python kunlun.py init initialize</span><br><span class="line"></span><br><span class="line">python kunlun.py config load</span><br><span class="line"></span><br><span class="line">python kunlun.py plugin php_unserialize_chain_tools -t C:\CMS</span><br></pre></td></tr></table></figure>
+
+<h3 id="源码分析"><a href="#源码分析" class="headerlink" title="源码分析"></a>源码分析</h3><h4 id="核心文件"><a href="#核心文件" class="headerlink" title="核心文件"></a>核心文件</h4><p>插件php_unserialize_chain_tools核心代码的运行逻辑如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">__init__.py -&gt; cli.py主线程 -&gt; until.py加载规则库 -&gt; detection.py 判断扫描对象的语言和框架 -&gt; engine.py(scan) 启动扫描 -&gt; cast.py ast -&gt; parser.py ast分析 -&gt; engine.py 整理结果 -&gt; export.py 导出结果</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>init.py：  参数的解析和对应配置</li>
+<li>cli.py:    开始扫描前的一些预处理</li>
+<li>cast.py:   ast中预处理的一些代码，如匹配函数获取变量名</li>
+<li>config.py: 一些配置文件目录的配置</li>
+<li>const.py:  一些常量的配置</li>
+<li>engine.py: 扫描主逻辑，处理扫描已经扫描结果处理</li>
+<li>export.py: 扫描结果的处理</li>
+<li>file.py:   底层文件操作的处理</li>
+<li>log.py:    log日志配置</li>
+<li>parser.py  AST核心文件</li>
+<li>rule.py    规则处理文件</li>
+</ul>
+<h4 id="运行逻辑"><a href="#运行逻辑" class="headerlink" title="运行逻辑"></a>运行逻辑</h4><p>程序的入口点在主类<code>PhpUnSerChain</code>的<code>__init__</code>中,在<code>__init__</code>中定义了大量全局变量和临时全局变量,然后进入到<code>main</code>主函数中</p>
+<p><strong>目标文件处理</strong></p>
+<p>递归遍历目标目录下所有文件,收集如下信息</p>
+<p><code>self.type_nums</code> – 字典 {‘后缀名’: [‘文件名’]}</p>
+<p><code>self.file_sum</code> – 整数 文件总数</p>
+<p><code>self.file</code> – 文件相对路径</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">files</span>(<span class="params">self, absolute_path, level=<span class="number">1</span></span>):</span></span><br><span class="line">       <span class="keyword">if</span> level == <span class="number">1</span>:</span><br><span class="line">           logger.debug(<span class="string">&#x27;[PICKUP] &#x27;</span> + absolute_path)</span><br><span class="line">       <span class="keyword">try</span>:</span><br><span class="line">           <span class="keyword">if</span> os.path.isfile(absolute_path):</span><br><span class="line">               filename, directory = os.path.split(absolute_path)</span><br><span class="line">               self.file_info(directory, filename)</span><br><span class="line">           <span class="keyword">else</span>:</span><br><span class="line">               <span class="keyword">for</span> filename <span class="keyword">in</span> os.listdir(absolute_path):</span><br><span class="line">                   directory = os.path.join(absolute_path, filename)</span><br><span class="line"></span><br><span class="line">                   flag = <span class="number">0</span></span><br><span class="line"></span><br><span class="line">                   <span class="comment"># check black path list</span></span><br><span class="line">                   <span class="comment"># if self.black_path_list:</span></span><br><span class="line">                   <span class="comment">#     for black_path in self.black_path_list:</span></span><br><span class="line">                   <span class="comment">#         if black_path in filename:</span></span><br><span class="line">                   <span class="comment">#             flag = 1</span></span><br><span class="line">                   <span class="keyword">if</span> <span class="keyword">not</span> check_kunlunignore(directory):</span><br><span class="line">                       <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                   <span class="comment"># Directory Structure</span></span><br><span class="line">                   logger.debug(<span class="string">&#x27;[PICKUP] [FILES] &#x27;</span> + <span class="string">&#x27;|  &#x27;</span> * (level - <span class="number">1</span>) + <span class="string">&#x27;|--&#x27;</span> + filename)</span><br><span class="line">                   <span class="keyword">if</span> os.path.isdir(directory):</span><br><span class="line">                       self.files(directory, level + <span class="number">1</span>)</span><br><span class="line">                   <span class="keyword">if</span> os.path.isfile(directory):</span><br><span class="line">                       self.file_info(directory, filename)</span><br><span class="line">       <span class="keyword">except</span> OSError <span class="keyword">as</span> e:</span><br><span class="line">           logger.error(<span class="string">&quot;[PICKUP] &#123;&#125;&quot;</span>.<span class="built_in">format</span>(traceback.format_exc()))</span><br><span class="line">           logger.error(<span class="string">&#x27;[PICKUP] &#123;msg&#125;&#x27;</span>.<span class="built_in">format</span>(msg=e))</span><br><span class="line">           exit()</span><br><span class="line"></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">file_info</span>(<span class="params">self, path, filename</span>):</span></span><br><span class="line">       <span class="comment"># Statistic File Type Count</span></span><br><span class="line">       file_name, file_extension = os.path.splitext(path)</span><br><span class="line"></span><br><span class="line">       <span class="comment"># 当设定了lan时加入检查</span></span><br><span class="line">       <span class="comment"># if file_extension.lower() in self.ext_list:</span></span><br><span class="line">	</span><br><span class="line">       <span class="comment"># 以后缀名添加键并将值添加为文件名</span></span><br><span class="line">       self.type_nums.setdefault(file_extension.lower(), []).append(filename)</span><br><span class="line"></span><br><span class="line">       path = path.replace(self.absolute_path, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">       self.file.append(path)</span><br><span class="line">       self.file_sum += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+<p>对<code>self.type_nums</code>和<code>self.file</code>进行处理拿到<code>self.result</code></p>
+<p><code>self.result</code> – 字典 {‘后缀名’:{‘count’: 文件数目, ‘list’: [‘文件相对路径’]}}</p>
+<p>并对其进行排序操作再一次生成生成<code>self.result</code></p>
+<p><code>self.result</code> – 列表 [(‘后缀名’, {‘count’: 文件数目, ‘list’: [‘文件相对路径’]})]</p>
+<p>最后返回处理好的文件信息<code>self.result</code>,文件总数<code>self.file_sum</code>,时间消耗<code>t2-t1</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">collect_files</span>(<span class="params">self</span>):</span></span><br><span class="line">    t1 = time.time()</span><br><span class="line">    self.files(self.absolute_path)</span><br><span class="line">    self.result[<span class="string">&#x27;no_extension&#x27;</span>] = &#123;<span class="string">&#x27;count&#x27;</span>: <span class="number">0</span>, <span class="string">&#x27;list&#x27;</span>: []&#125;</span><br><span class="line">    <span class="keyword">for</span> extension, values <span class="keyword">in</span> self.type_nums.items():</span><br><span class="line">        extension = extension.strip()</span><br><span class="line">        <span class="keyword">if</span> extension:</span><br><span class="line">            self.result[extension] = &#123;<span class="string">&#x27;count&#x27;</span>: <span class="built_in">len</span>(values), <span class="string">&#x27;list&#x27;</span>: []&#125;</span><br><span class="line">        <span class="comment"># .php : 123</span></span><br><span class="line">        logger.debug(<span class="string">&#x27;[PICKUP] [EXTENSION-COUNT] &#123;0&#125; : &#123;1&#125;&#x27;</span>.<span class="built_in">format</span>(extension, <span class="built_in">len</span>(values)))</span><br><span class="line">        <span class="keyword">for</span> f <span class="keyword">in</span> self.file:</span><br><span class="line">            filename = f.split(<span class="string">&quot;/&quot;</span>)[-<span class="number">1</span>].split(<span class="string">&quot;\\&quot;</span>)[-<span class="number">1</span>]</span><br><span class="line">            es = filename.split(os.extsep)</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">len</span>(es) &gt;= <span class="number">2</span>:</span><br><span class="line">                <span class="comment"># Exists Extension</span></span><br><span class="line">                <span class="comment"># os.extsep + es[len(es) - 1]</span></span><br><span class="line">                <span class="keyword">if</span> f.endswith(extension) <span class="keyword">and</span> extension:</span><br><span class="line">                    self.result[extension][<span class="string">&#x27;list&#x27;</span>].append(f)</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                <span class="comment"># Didn&#x27;t have extension</span></span><br><span class="line">                <span class="keyword">if</span> <span class="keyword">not</span> extension:</span><br><span class="line">                    self.result[<span class="string">&#x27;no_extension&#x27;</span>][<span class="string">&#x27;count&#x27;</span>] = <span class="built_in">int</span>(self.result[<span class="string">&#x27;no_extension&#x27;</span>][<span class="string">&#x27;count&#x27;</span>]) + <span class="number">1</span></span><br><span class="line">                    self.result[<span class="string">&#x27;no_extension&#x27;</span>][<span class="string">&#x27;list&#x27;</span>].append(f)</span><br><span class="line">    <span class="keyword">if</span> self.result[<span class="string">&#x27;no_extension&#x27;</span>][<span class="string">&#x27;count&#x27;</span>] == <span class="number">0</span>:</span><br><span class="line">        <span class="keyword">del</span> self.result[<span class="string">&#x27;no_extension&#x27;</span>]</span><br><span class="line">    t2 = time.time()</span><br><span class="line">    <span class="comment"># reverse list count</span></span><br><span class="line">    <span class="comment"># 排序与字典转化为列表</span></span><br><span class="line">    self.result = <span class="built_in">sorted</span>(self.result.items(), key=<span class="keyword">lambda</span> t: t[<span class="number">0</span>], reverse=<span class="literal">False</span>)</span><br><span class="line">    <span class="keyword">return</span> self.result, self.file_sum, t2 - t1</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后进行AST的预处理,传入根目录和处理好的文件信息</p>
+<p>分别传给<code>self.target_directory</code>和<code>self.file_list</code></p>
+<p>把文件信息全部放入队列中</p>
+<p>异步线程搜索所有php文件并进行ast语法解析放入<code>self.pre_result</code>字典中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这里截取处理phpAST相关部分</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">pre_ast_all</span>(<span class="params">self, lan=<span class="literal">None</span>, is_unprecom=<span class="literal">False</span></span>):</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> lan <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># 检查是否在可ast pasre列表中</span></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> <span class="built_in">list</span>(<span class="built_in">set</span>(lan).intersection(<span class="built_in">set</span>(could_ast_pase_lans))):</span><br><span class="line">                logger.info(<span class="string">&quot;[AST][Pretreatment] Current scan target language does not require ast pretreatment...&quot;</span>)</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">True</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">for</span> fileext <span class="keyword">in</span> self.file_list:</span><br><span class="line">            self.target_queue.put(fileext)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 设置公共变量用于判断是否设定了扫描语言</span></span><br><span class="line">        self.lan = lan</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 设置标志位标识跳过预编译阶段</span></span><br><span class="line">        self.is_unprecom = is_unprecom</span><br><span class="line"></span><br><span class="line">        <span class="comment"># 以通过 asyncio.new_event_loop() 创建无数个 event loop 对象。</span></span><br><span class="line">        <span class="comment">#  run_until_complete() 会等到给定的 coroutine 完成再结束</span></span><br><span class="line">        loop = asyncio.new_event_loop()</span><br><span class="line">        asyncio.set_event_loop(loop)</span><br><span class="line">		<span class="comment"># 异步网络操作</span></span><br><span class="line">        scan_list = (self.pre_ast() <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">10</span>))</span><br><span class="line">        loop.run_until_complete(asyncio.gather(*scan_list))</span><br><span class="line"></span><br><span class="line">    <span class="keyword">async</span> <span class="function"><span class="keyword">def</span> <span class="title">pre_ast</span>(<span class="params">self</span>):</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">while</span> <span class="keyword">not</span> self.target_queue.empty():</span><br><span class="line"></span><br><span class="line">            fileext = self.target_queue.get()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> self.lan:</span><br><span class="line">                <span class="keyword">break</span></span><br><span class="line"></span><br><span class="line">            <span class="keyword">if</span> fileext[<span class="number">0</span>] <span class="keyword">in</span> ext_dict[<span class="string">&#x27;php&#x27;</span>] <span class="keyword">and</span> <span class="string">&#x27;php&#x27;</span> <span class="keyword">in</span> self.lan:</span><br><span class="line">                <span class="comment"># 下面是对于php文件的处理逻辑</span></span><br><span class="line">                <span class="keyword">for</span> filepath <span class="keyword">in</span> fileext[<span class="number">1</span>][<span class="string">&#x27;list&#x27;</span>]:</span><br><span class="line">                    all_nodes = []</span><br><span class="line">                    filepath = self.get_path(filepath)<span class="comment"># 拿到绝对路径</span></span><br><span class="line">                    self.pre_result[filepath] = &#123;&#125;</span><br><span class="line">                    self.pre_result[filepath][<span class="string">&#x27;language&#x27;</span>] = <span class="string">&#x27;php&#x27;</span></span><br><span class="line">                    self.pre_result[filepath][<span class="string">&#x27;ast_nodes&#x27;</span>] = []</span><br><span class="line"></span><br><span class="line">                    fi = codecs.<span class="built_in">open</span>(filepath, <span class="string">&quot;r&quot;</span>, encoding=<span class="string">&#x27;utf-8&#x27;</span>, errors=<span class="string">&#x27;ignore&#x27;</span>)</span><br><span class="line">                    code_content = fi.read()<span class="comment"># 拿到php文件内容</span></span><br><span class="line">                    fi.close()</span><br><span class="line"></span><br><span class="line">                    <span class="comment"># self.pre_result[filepath][&#x27;content&#x27;] = code_content</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">try</span>:</span><br><span class="line">                        <span class="keyword">if</span> <span class="keyword">not</span> self.is_unprecom:</span><br><span class="line">                            parser = make_parser()<span class="comment">#php语法分析</span></span><br><span class="line">                            all_nodes = parser.parse(code_content, debug=<span class="literal">False</span>, lexer=lexer.clone(), tracking=<span class="literal">True</span>)<span class="comment"># 此处拿到ast节点</span></span><br><span class="line">                        <span class="keyword">else</span>:</span><br><span class="line">                            all_nodes = []</span><br><span class="line"></span><br><span class="line">                        <span class="comment"># 合并字典</span></span><br><span class="line">                        self.pre_result[filepath][<span class="string">&#x27;ast_nodes&#x27;</span>] = all_nodes</span><br><span class="line"></span><br><span class="line">                    <span class="keyword">except</span> SyntaxError <span class="keyword">as</span> e:</span><br><span class="line">                        logger.warning(<span class="string">&#x27;[AST] [ERROR] parser &#123;&#125; SyntaxError&#x27;</span>.<span class="built_in">format</span>(filepath))</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">except</span> AssertionError <span class="keyword">as</span> e:</span><br><span class="line">                        logger.warning(<span class="string">&#x27;[AST] [ERROR] parser &#123;&#125;: &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(filepath, traceback.format_exc()))</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    <span class="keyword">except</span>:</span><br><span class="line">                        logger.warning(<span class="string">&#x27;[AST] something error, &#123;&#125;&#x27;</span>.<span class="built_in">format</span>(traceback.format_exc()))</span><br><span class="line">                        <span class="keyword">continue</span></span><br><span class="line"></span><br><span class="line">                    <span class="comment"># 搜索所有的常量</span></span><br><span class="line">                    <span class="keyword">for</span> node <span class="keyword">in</span> all_nodes:</span><br><span class="line">                        <span class="keyword">if</span> <span class="built_in">isinstance</span>(node, php.FunctionCall) <span class="keyword">and</span> node.name == <span class="string">&quot;define&quot;</span>:</span><br><span class="line">                            define_params = node.params</span><br><span class="line"></span><br><span class="line">                            <span class="keyword">if</span> define_params:</span><br><span class="line">                                logger.debug(</span><br><span class="line">                                    <span class="string">&quot;[AST][Pretreatment] new define &#123;&#125;=&#123;&#125;&quot;</span>.<span class="built_in">format</span>(define_params[<span class="number">0</span>].node,</span><br><span class="line">                                                                                  define_params[<span class="number">1</span>].node))</span><br><span class="line"></span><br><span class="line">                                key = define_params[<span class="number">0</span>].node</span><br><span class="line">                                <span class="keyword">if</span> <span class="built_in">isinstance</span>(key, php.Constant):</span><br><span class="line">                                    key = key.name</span><br><span class="line"></span><br><span class="line">                                self.define_dict[key] = define_params[<span class="number">1</span>].node</span><br><span class="line">gc.Collect()<span class="comment">#表示制对所有代进行垃圾回收</span></span><br></pre></td></tr></table></figure>
+
+<p>self.pre_result示例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">&#x27;D:\\phpStudy\\phpstudy_pro\\WWW\\yii2\\assets\\AppAsset.php&#x27;</span>: &#123;<span class="string">&#x27;language&#x27;</span>: <span class="string">&#x27;php&#x27;</span>, <span class="string">&#x27;ast_nodes&#x27;</span>: [Namespace(<span class="string">&#x27;app\\assets&#x27;</span>, []), UseDeclarations([UseDeclaration(<span class="string">&#x27;yii\\web\\AssetBundle&#x27;</span>, <span class="literal">None</span>)]), Class(<span class="string">&#x27;AppAsset&#x27;</span>, <span class="literal">None</span>, <span class="string">&#x27;AssetBundle&#x27;</span>, [], [], [ClassVariables([<span class="string">&#x27;public&#x27;</span>], [ClassVariable(<span class="string">&#x27;$basePath&#x27;</span>, <span class="string">&#x27;@webroot&#x27;</span>)]), ClassVariables([<span class="string">&#x27;public&#x27;</span>], [ClassVariable(<span class="string">&#x27;$baseUrl&#x27;</span>, <span class="string">&#x27;@web&#x27;</span>)]), ClassVariables([<span class="string">&#x27;public&#x27;</span>], [ClassVariable(<span class="string">&#x27;$css&#x27;</span>, Array([ArrayElement(<span class="literal">None</span>, <span class="string">&#x27;css/site.css&#x27;</span>, <span class="literal">False</span>)]))]), ClassVariables([<span class="string">&#x27;public&#x27;</span>], [ClassVariable(<span class="string">&#x27;$js&#x27;</span>, Array([]))]), ClassVariables([<span class="string">&#x27;public&#x27;</span>], [ClassVariable(<span class="string">&#x27;$depends&#x27;</span>, Array([ArrayElement(<span class="literal">None</span>, <span class="string">&#x27;yii\\web\\YiiAsset&#x27;</span>, <span class="literal">False</span>), ArrayElement(<span class="literal">None</span>, <span class="string">&#x27;yii\\bootstrap\\BootstrapAsset&#x27;</span>, <span class="literal">False</span>)]))])])]&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="2021122421/image-20211229210804738.png" alt="image-20211229210804738"></p>
+<p>接着对ast节点进行遍历寻找常量,放入self.define_dict字典中</p>
+<p>debug</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[21:19:22] [AST][Pretreatment] new define YII_ENV=test</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-number">1.</span> <span class="toc-text">前言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.</span> <span class="toc-text">环境搭建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%B8%E5%BF%83%E6%96%87%E4%BB%B6"><span class="toc-number">3.1.</span> <span class="toc-text">核心文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%BF%90%E8%A1%8C%E9%80%BB%E8%BE%91"><span class="toc-number">3.2.</span> <span class="toc-text">运行逻辑</span></a></li></ol></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2021/12/24/2021122421/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2021/12/24/2021122421/&text=kunlun-M源码分析"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2021/12/24/2021122421/&is_video=false&description=kunlun-M源码分析"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=kunlun-M源码分析&body=Check out this article: https://tefuir72.github.io/2021/12/24/2021122421/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2021/12/24/2021122421/&title=kunlun-M源码分析"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2021/12/24/2021122421/&name=kunlun-M源码分析&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2021/12/24/2021122421/&t=kunlun-M源码分析"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2022
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
